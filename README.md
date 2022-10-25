@@ -1,1 +1,1 @@
-# Algorithmenselektor_FJSP
+# Algorithmenselektor_JSP
