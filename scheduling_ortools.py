@@ -1,5 +1,6 @@
 import collections
 from ortools.sat.python import cp_model
+import pandas as pd
 
 def ortools_scheduler(jobs_data):
 
@@ -107,3 +108,5 @@ def ortools_scheduler(jobs_data):
     print('  - conflicts: %i' % solver.NumConflicts())
     print('  - branches : %i' % solver.NumBranches())
     print('  - wall time: %f s' % solver.WallTime())
+
+    return assigned_jobs, all_machines
