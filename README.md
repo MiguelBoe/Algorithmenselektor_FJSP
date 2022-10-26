@@ -2,10 +2,10 @@
 
 TODO:
 
--	Instanzen generieren
-  o	Maschinen = Fertigungsschritte
-  o	Wie groß?
-  o	Wie viele?
+-	Instanzen generieren \\
+  o	Maschinen = Fertigungsschritte \\
+  o	Wie groß? \\
+  o	Wie viele? \\
 -	Erste Startlösung
   o	Giffler und Thompson implementieren
   o	Lösen
