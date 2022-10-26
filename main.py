@@ -3,9 +3,9 @@ from random import randrange
 from scheduling_ortools import *
 import plotly.figure_factory as ff
 
-max_job_count = 20
-max_task_count = 20
-max_processing_time = 20
+max_job_count = 10
+max_task_count = 10
+max_processing_time = 10
 
 def job_generator():
 
