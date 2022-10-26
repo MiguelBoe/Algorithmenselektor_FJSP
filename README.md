@@ -2,7 +2,7 @@
 
 TODO:
 
--	Instanzen generieren \\
+-	Instanzen generieren \newline
   o	Maschinen = Fertigungsschritte \\
   o	Wie groß? \\
   o	Wie viele? \\
