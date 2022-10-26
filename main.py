@@ -3,9 +3,9 @@ from random import randrange
 from scheduling_ortools import *
 import plotly.figure_factory as ff
 
-max_job_count = 10
-max_task_count = 10
-max_processing_time = 10
+max_job_count = 20
+max_task_count = 20
+max_processing_time = 20
 
 def job_generator():
 
@@ -44,3 +44,6 @@ res = visualize_schedule(assigned_jobs = assigned_jobs,all_machines = all_machin
 fig = ff.create_gantt(res, index_col = 'Resource', show_colorbar = True, group_tasks = True)
 fig.layout.xaxis.type = 'linear'
 fig.show()
+
+
+#https://medium.com/@gilewski.slawomir/using-simulated-annealing-in-job-shop-problem-solving-5d72232a2abe
