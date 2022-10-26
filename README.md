@@ -2,27 +2,28 @@
 
 TODO:
 
--	Instanzen generieren \newline
-  o	Maschinen = Fertigungsschritte \\
-  o	Wie groß? \\
-  o	Wie viele? \\
--	Erste Startlösung
-  o	Giffler und Thompson implementieren
-  o	Lösen
-  o	Speichern
--	Metheuristik
-  o	Auswahl der Heuristik(en) -> Paper lesen (Pesch)
-  Nachbaschaften
-    	Auswahl der Nachbarschaft (N1 Empfohlen)
-    	Implementieren
-  o	Implementieren der Heuristiken
-  o	Speichern der Lösungen
--	OR-Tools
-  o	Implementieren
-  o	Speichern der Lösungen
--	Trainingsdaten
-  o	OR-Tool Lösungen und Heuristik Lösungen vergleichen
-  o	Informationen der Instanzen (welche sind wichtig?) mit Angabe des besten Lösers
--	Algorithmenselektor
-  o	Auswahl des Selektors (Baum, KNN…?)
-  o	Implementieren
+*	Instanzen generieren 
+    *	Maschinen = Fertigungsschritte 
+    *	Wie groß? 15 bis 100 Jobs // 15 bis 20 Maschinen
+    *	Wie viele? 
+*	Erste Startlösung
+      *	Giffler und Thompson implementieren
+      *	Lösen
+      *	Speichern
+*	Metheuristik
+      *	Auswahl der Heuristik(en) -> Paper lesen (Pesch)
+      * Nachbaschaften
+      
+            Auswahl der Nachbarschaft (N1 Empfohlen)
+            Implementieren
+      *	Implementieren der Heuristiken
+      *	Speichern der Lösungen
+*	OR-Tools
+      *	Implementieren
+      * Speichern der Lösungen
+*	Trainingsdaten
+      *	OR-Tool Lösungen und Heuristik Lösungen vergleichen
+      *	Informationen der Instanzen (welche sind wichtig?) mit Angabe des besten Lösers
+*	Algorithmenselektor
+      *	Auswahl des Selektors (Baum, KNN…?)
+      *	Implementieren
