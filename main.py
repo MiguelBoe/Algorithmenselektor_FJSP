@@ -44,3 +44,5 @@ res = visualize_schedule(assigned_jobs = assigned_jobs,all_machines = all_machin
 fig = ff.create_gantt(res, index_col = 'Resource', show_colorbar = True, group_tasks = True)
 fig.layout.xaxis.type = 'linear'
 fig.show()
+
+print('Hallo')
