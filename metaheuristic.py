@@ -3,7 +3,7 @@ import pandas as pd
 jobs_data = [  # task = (machine_id, processing_time).
     [(0, 3), (1, 2), (2, 2)],  # Job0
     [(0, 2), (2, 1), (1, 5)],  # Job1
-    [(0, 2), (1, 6), (2, 3)]  # Job2
+    [(0, 1), (1, 6), (2, 3)]  # Job2
 ]
 
 def meta(jobs_data):
@@ -28,40 +28,30 @@ def meta(jobs_data):
 
     schedule = []
     for task in range(len(tasks)):
-        temp = []
-        for job in range(min(tasks, key=lambda x:x[0])[0], max(tasks, key=lambda x:x[0])[0]+1):
+        temp = {}
+        for job in list(set({k: v for k, v in enumerate([x[0] for x in tasks])}.values())):
             filtered_list = [tup for tup in tasks if tup[0] == job]
             filtered_list2 = [tup for tup in filtered_list if tup[1] == min(filtered_list, key=lambda x:x[1])[1]]
-            temp.append(filtered_list2[0])
+            temp.update({job:tuple(filtered_list2)})
 
-        zz = {k: v for k, v in enumerate([x[3] for x in temp])}
-        zz = {**z, **zz}
+        kk,zz = {},{}
+        for job in list(set({k: v for k, v in enumerate([x[0] for x in tasks])}.values())):
+            kk.update({job:z[tuple(temp[job])[-1][-2]]})
+            zz.update({job:tuple(temp[job])[-1][-1]})
+
+
+        rr = {**r, **zz}
         zzt = [k for k in zz if zz[k] == min(zz.values())]
 
-        filtered_list3 = [tup for tup in temp if tup[0] in min_keys]
-
-        rr = {k: v for k, v in enumerate([x[3] for x in filtered_list3])}
-        rr = {**r, **rr}
-        rrt = max(rr, key=rr.get)
 
 
-
-
-
-        schedule.append(filtered_list3[0])
-        tasks = list(set(tasks).difference(set(filtered_list3)))
-        zr = max(z[filtered_list3[0][2]]+filtered_list3[0][3], r[filtered_list3[0][0]]+filtered_list3[0][3])
-        z.update({filtered_list3[0][2]:zr})
-        r.update({filtered_list3[0][0]:zr})
-
-        print()
-
-
-
-
-
-
-
+        if len(zzt)<2:
+            schedule.append(temp[zzt[0]])
+            tasks = list(set(tasks).difference(set(temp[zzt[0]])))
+            print(zzt[0])
+            zr = max((r[tuple(temp[zzt[0]])[-1][0]] + tuple(temp[zzt[0]])[-1][-1]), (kk[zzt[0]]+tuple(temp[zzt[0]])[-1][-1]))
+            r.update({zzt[0]: zr})
+            z.update({tuple(temp[zzt[0]])[-1][-2]: zr})
 
 
     print()

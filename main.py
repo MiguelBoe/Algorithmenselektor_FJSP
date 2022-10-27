@@ -24,6 +24,11 @@ def job_generator():
     return jobs_data
 
 jobs_data = job_generator()
+jobs_data = [  # task = (machine_id, processing_time).
+    [(0, 3), (1, 2), (2, 2)],  # Job0
+    [(0, 2), (2, 1), (1, 5)],  # Job1
+    [(0, 1), (1, 6), (2, 3)]  # Job2
+]
 assigned_jobs, all_machines = ortools_scheduler(jobs_data)
 
 #Visualisation function
