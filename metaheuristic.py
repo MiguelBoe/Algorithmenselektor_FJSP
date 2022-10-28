@@ -56,5 +56,9 @@ def metaheuristic(jobs_data):
         makespan = max((r[tuple(temp_jobs[scheduled_job])[-1][0]] + tuple(temp_jobs[scheduled_job])[-1][-1]), (temp_z[scheduled_job]+tuple(temp_jobs[scheduled_job])[-1][-1]))
         r.update({scheduled_job: makespan})
         z.update({tuple(temp_jobs[scheduled_job])[-1][-2]: makespan})
+
     print(f'\nSolution found with a makespan of {makespan}')
-metaheuristic(jobs_data)
+
+    return schedule, makespan
+
+schedule, makespan = metaheuristic(jobs_data)
