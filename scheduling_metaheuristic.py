@@ -1,12 +1,5 @@
-import pandas as pd
 from collections import Counter
-
-jobs_data = [  # task = (machine_id, processing_time).
-    [(0, 5), (1, 3), (2, 3), (3, 2)],  # Job0
-    [(1, 4), (0, 7), (2, 8), (3, 6)],  # Job1
-    [(3, 3), (2, 5), (1, 6), (0, 1)],  # Job2
-    [(2, 4), (3, 7), (1, 1), (0, 2)]  # Job2
-]
+import plotly.figure_factory as ff
 
 def metaheuristic(jobs_data):
 
@@ -51,14 +44,20 @@ def metaheuristic(jobs_data):
         else:
             scheduled_job = jobs_for_schedule[0]
 
-        schedule.append(temp_jobs[scheduled_job])
+        scheduled_job_complete = temp_jobs[scheduled_job][0] + (max(temp_z[scheduled_job], r[scheduled_job]),)
+        schedule.append(scheduled_job_complete)
         tasks = list(set(tasks).difference(set(temp_jobs[scheduled_job])))
-        makespan = max((r[tuple(temp_jobs[scheduled_job])[-1][0]] + tuple(temp_jobs[scheduled_job])[-1][-1]), (temp_z[scheduled_job]+tuple(temp_jobs[scheduled_job])[-1][-1]))
+        makespan = max((r[tuple(temp_jobs[scheduled_job])[-1][0]] + tuple(temp_jobs[scheduled_job])[-1][-1]),(temp_z[scheduled_job] + tuple(temp_jobs[scheduled_job])[-1][-1]))
         r.update({scheduled_job: makespan})
         z.update({tuple(temp_jobs[scheduled_job])[-1][-2]: makespan})
 
     print(f'\nSolution found with a makespan of {makespan}')
 
-    return schedule, makespan
+    schedule_dict = []
+    for i in range(len(schedule)):
+        schedule_dict.append({'Task': tuple(schedule[i])[2],
+                              'Start': tuple(schedule[i])[4],
+                              'Finish': tuple(schedule[i])[4] + tuple(schedule[i])[3],
+                              'Resource': f'Job_{tuple(schedule[i])[0]}'})
 
-schedule, makespan = metaheuristic(jobs_data)
+    return schedule_dict
