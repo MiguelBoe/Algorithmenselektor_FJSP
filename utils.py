@@ -2,7 +2,7 @@ import random
 from random import randrange
 import plotly.figure_factory as ff
 
-def job_generator(max_job_count, max_task_count, max_processing_time):
+def job_generator(max_job_count, max_task_count, max_duration):
 
     jobs_data = []
     job_count = randrange(2,max_job_count)
@@ -13,7 +13,7 @@ def job_generator(max_job_count, max_task_count, max_processing_time):
         for task in range(task_count):
             machine_id = random.choice(list(set(range(task_count)).difference(set(machine_id_del))))
             machine_id_del.append(machine_id)
-            task_data.append((machine_id, randrange(1, max_processing_time)))
+            task_data.append((machine_id, randrange(1, max_duration)))
         jobs_data.append(task_data)
 
     return jobs_data

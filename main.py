@@ -6,10 +6,10 @@ from scheduling_metaheuristic import *
 solver = 'meta' # google, meta
 max_job_count = 5
 max_task_count = 5
-max_processing_time = 5
+max_duration = 5
 
 #Job Generator
-jobs_data = job_generator(max_job_count, max_task_count, max_processing_time)
+jobs_data = job_generator(max_job_count, max_task_count, max_duration)
 jobs_data = [  # task = (machine_id, processing_time).
     [(0, 5), (1, 3), (2, 3), (3, 2)],  # Job0
     [(1, 4), (0, 7), (2, 8), (3, 6)],  # Job1
@@ -22,9 +22,13 @@ if solver == 'google':
     assigned_jobs, all_machines = ortools_scheduler(jobs_data)
     schedule_dict = visualize_schedule(assigned_jobs=assigned_jobs, all_machines=all_machines, plan_date=0)
 elif solver == 'meta':
-    schedule_dict = metaheuristic(jobs_data)
+    schedule_dict = giffler_thompson(jobs_data)
 
 #Visualization
 fig = ff.create_gantt(schedule_dict, index_col='Resource', show_colorbar=True, group_tasks=True)
 fig.layout.xaxis.type = 'linear'
 fig.show()
+
+
+test = TabuSearch(schedule_dict)
+test.get_critical_path(critical_path=[], last_job=max(schedule_dict, key=lambda x: x['Finish']))
