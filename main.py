@@ -20,15 +20,16 @@ jobs_data = [  # task = (machine_id, processing_time).
 #Selection of the solver
 if solver == 'google':
     assigned_jobs, all_machines = ortools_scheduler(jobs_data)
-    schedule_dict = visualize_schedule(assigned_jobs=assigned_jobs, all_machines=all_machines, plan_date=0)
+    schedule_list = visualize_schedule(assigned_jobs=assigned_jobs, all_machines=all_machines, plan_date=0)
 elif solver == 'meta':
-    schedule_dict = giffler_thompson(jobs_data)
+    schedule_list, schedule_dict = giffler_thompson(jobs_data)
+    schedule_dict = get_parents(schedule_dict)
+    critical_path = get_critical_path(schedule_dict)
+    print()
 
 #Visualization
-fig = ff.create_gantt(schedule_dict, index_col='Resource', show_colorbar=True, group_tasks=True)
+fig = ff.create_gantt(schedule_list, index_col='Resource', show_colorbar=True, group_tasks=True)
 fig.layout.xaxis.type = 'linear'
 fig.show()
 
-
-test = TabuSearch(schedule_dict)
-test.get_critical_path(critical_path=[], last_job=max(schedule_dict, key=lambda x: x['Finish']))
+#https://stackoverflow.com/questions/33203992/how-can-i-make-a-recursive-search-for-longest-node-more-efficient

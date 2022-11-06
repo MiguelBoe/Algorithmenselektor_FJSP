@@ -29,4 +29,4 @@ def visualize_schedule(assigned_jobs, all_machines, plan_date):
                         Resource = name)
             schedule_dict.append(temp)
     schedule_dict.sort(key = lambda x: x['Task'])
-    return schedule_dict
+    return schedule_list

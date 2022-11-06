@@ -1,5 +1,5 @@
 from collections import Counter
-import plotly.figure_factory as ff
+from criticalpath import Node
 
 def giffler_thompson(jobs_data):
 
@@ -53,34 +53,42 @@ def giffler_thompson(jobs_data):
 
     print(f'\nSolution found with a makespan of {makespan}')
 
-    schedule_dict = []
+    schedule_list = []
+    schedule_dict = {}
     for i in range(len(schedule)):
-        schedule_dict.append({'Task': schedule[i][2],
+        schedule_dict.update({i:{'Task': schedule[i][2],
+                              'Start': schedule[i][4],
+                              'Finish': schedule[i][4] + schedule[i][3],
+                              'Resource': f'Job_{schedule[i][0]}'}})
+
+        schedule_list.append({'Task': schedule[i][2],
                               'Start': schedule[i][4],
                               'Finish': schedule[i][4] + schedule[i][3],
                               'Resource': f'Job_{schedule[i][0]}'})
 
+    return schedule_list, schedule_dict
+
+#Get Parents
+def get_parents(schedule_dict):
+    for key, value in schedule_dict.items():
+        value.update({'Duration': value['Finish']-value['Start'],'Predecessor':list({k: v for k, v in schedule_dict.items() if v['Finish'] == value['Start'] and
+                                               (v['Task'] == value['Task'] or v['Resource'] == value['Resource'])})})
     return schedule_dict
 
+#Critical Path
+def get_critical_path(schedule_dict):
 
-class TabuSearch:
-    def __init__(self, schedule_dict):
-        self.currSolution = schedule_dict
+    nodes = {}
+    p = Node('project')
 
-    def get_critical_path(self, critical_path, last_job):
-        #critical_path_0 = []
-        #last_job = max(self.currSolution, key=lambda x: x['Finish'])
-        critical_path.append(last_job)
+    for node in schedule_dict.keys():
+        nodes.update({f'node_{node}':p.add(Node(f'{node}', duration=schedule_dict[node]['Duration'], lag=0))})
+    for k in nodes.keys():
+        for i in schedule_dict[int(k.split("_",1)[1])]['Predecessor']:
+            print(nodes[k], nodes[f'node_{i}'])
+            p.link(nodes[k], nodes[f'node_{i}'])
 
-        while last_job['Start'] != 0:
-            actual_job = list(filter(lambda v: v['Finish'] == last_job['Start'] and
-                                               (v['Task'] == last_job['Task'] or
-                                                v['Resource'] == last_job['Resource']), self.currSolution))
-            # if len(actual_job) == 1:
-            critical_path.append(actual_job[0])
-            last_job = actual_job[0]
-            # else:
-            #     for job in range(len(actual_job)):
-            #         globals()[f'critical_path_{job+1}'] = TabuSearch.get_critical_path(self, critical_path = critical_path, last_job = actual_job[job])
+    p.update_all()
+    critical_path = p.get_critical_path()
 
-        print()
+    return critical_path
