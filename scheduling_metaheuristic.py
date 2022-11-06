@@ -85,7 +85,6 @@ def get_critical_path(schedule_dict):
         nodes.update({f'node_{node}':p.add(Node(f'{node}', duration=schedule_dict[node]['Duration'], lag=0))})
     for k in nodes.keys():
         for i in schedule_dict[int(k.split("_",1)[1])]['Predecessor']:
-            print(nodes[k], nodes[f'node_{i}'])
             p.link(nodes[k], nodes[f'node_{i}'])
 
     p.update_all()

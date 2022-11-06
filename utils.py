@@ -19,7 +19,7 @@ def job_generator(max_job_count, max_task_count, max_duration):
     return jobs_data
 
 def visualize_schedule(assigned_jobs, all_machines, plan_date):
-    schedule_dict = []
+    schedule_list = []
     for machine in all_machines:
         assigned_jobs[machine].sort()
         for assigned_task in assigned_jobs[machine]:
@@ -27,6 +27,6 @@ def visualize_schedule(assigned_jobs, all_machines, plan_date):
             temp = dict(Task = machine,Start = plan_date + assigned_task.start,
                         Finish = plan_date + assigned_task.start + assigned_task.duration,
                         Resource = name)
-            schedule_dict.append(temp)
-    schedule_dict.sort(key = lambda x: x['Task'])
+            schedule_list.append(temp)
+    schedule_list.sort(key = lambda x: x['Task'])
     return schedule_list

@@ -25,7 +25,6 @@ elif solver == 'meta':
     schedule_list, schedule_dict = giffler_thompson(jobs_data)
     schedule_dict = get_parents(schedule_dict)
     critical_path = get_critical_path(schedule_dict)
-    print()
 
 #Visualization
 fig = ff.create_gantt(schedule_list, index_col='Resource', show_colorbar=True, group_tasks=True)
