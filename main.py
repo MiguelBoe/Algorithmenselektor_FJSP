@@ -5,7 +5,7 @@
 #         Projektseminar Business Analytics - Wintersemester 22/23            #
 #-----------------------------------------------------------------------------#
 #                                                                             #
-#                             JobList Class                                   #
+#                                 Main File                                   #
 #                                                                             #
 #-----------------------------------------------------------------------------#
 """
@@ -31,10 +31,9 @@ data = job_generator(max_job_count, max_machine_count, max_duration)
 #     [(2, 4), (3, 7), (1, 1), (0, 2)],  # Job2
 # ]
 
-
 # Selection of the solver
 if solver == "google":
-    assigned_jobs, all_machines = ortools_scheduler(data)
+    assigned_jobs, all_machines = ortools_scheduler(data[0].list_of_jobs)
     schedule_list = visualize_schedule(assigned_jobs=assigned_jobs, all_machines=all_machines, plan_date=0)
 elif solver == "meta":
     #data = JobList(data)
