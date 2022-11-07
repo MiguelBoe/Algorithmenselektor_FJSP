@@ -1,46 +1,49 @@
-import random
-from random import randrange
+"""
+@author: pretz & böttcher
+
+#-----------------------------------------------------------------------------#
+#         Projektseminar Business Analytics - Wintersemester 22/23            #
+#-----------------------------------------------------------------------------#
+#                                                                             #
+#                             JobList Class                                   #
+#                                                                             #
+#-----------------------------------------------------------------------------#
+"""
+
+from utils import *
 from scheduling_ortools import *
+from scheduling_giffler_thompson import giffler_thompson
 import plotly.figure_factory as ff
+from critical_path import get_critical_path, get_saz_sez
 
+# Config
+solver = "meta"  # google, meta
 max_job_count = 10
-max_task_count = 10
-max_processing_time = 10
+max_machine_count = 10
+max_duration = 10
 
-def job_generator():
+# Job Generator
+data = job_generator(max_job_count, max_machine_count, max_duration)
+# data = [  # task = (machine_id, processing_time).
+#     [(0, 5), (1, 3), (2, 3), (3, 2)],  # Job0
+#     [(1, 4), (0, 7), (2, 8), (3, 6)],  # Job1
+#     [(3, 3), (2, 5), (1, 6), (0, 1)],  # Job2
+#     [(2, 4), (3, 7), (1, 1), (0, 2)],  # Job2
+# ]
 
-    jobs_data = []
-    job_count = randrange(2,max_job_count)
-    for job in range(job_count):
-        task_data = []
-        task_count = randrange(2,max_task_count)
-        machine_id_del = []
-        for task in range(task_count):
-            machine_id = random.choice(list(set(range(task_count)).difference(set(machine_id_del))))
-            machine_id_del.append(machine_id)
-            task_data.append((machine_id, randrange(1, max_processing_time)))
-        jobs_data.append(task_data)
 
-    return jobs_data
+# Selection of the solver
+if solver == "google":
+    assigned_jobs, all_machines = ortools_scheduler(data)
+    schedule_list = visualize_schedule(assigned_jobs=assigned_jobs, all_machines=all_machines, plan_date=0)
+elif solver == "meta":
+    #data = JobList(data)
+    schedule, schedule_list = giffler_thompson(data[0])
+    get_saz_sez(schedule)
+    critical_path = get_critical_path(schedule)
 
-jobs_data = job_generator()
-assigned_jobs, all_machines = ortools_scheduler(jobs_data)
-
-#Visualisation function
-def visualize_schedule(assigned_jobs, all_machines, plan_date):
-    res = []
-    for machine in all_machines:
-        assigned_jobs[machine].sort()
-        for assigned_task in assigned_jobs[machine]:
-            name = 'Job_%i' % assigned_task.job
-            temp = dict(Task = machine,Start = plan_date + assigned_task.start,
-                        Finish = plan_date + assigned_task.start + assigned_task.duration,
-                        Resource = name)
-            res.append(temp)
-    res.sort(key = lambda x: x['Task'])
-    return res
-
-res = visualize_schedule(assigned_jobs = assigned_jobs,all_machines = all_machines, plan_date = 0)
-fig = ff.create_gantt(res, index_col = 'Resource', show_colorbar = True, group_tasks = True)
-fig.layout.xaxis.type = 'linear'
+# Visualization
+fig = ff.create_gantt(schedule_list, index_col="Resource", show_colorbar=True, group_tasks=True)
+fig.layout.xaxis.type = "linear"
 fig.show()
+print()
