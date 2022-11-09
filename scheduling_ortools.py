@@ -5,7 +5,7 @@
 #         Projektseminar Business Analytics - Wintersemester 22/23            #
 #-----------------------------------------------------------------------------#
 #                      CP Solver - Ortools by google                          #
-#                                                                             #      
+#                                                                             #
 #-----------------------------------------------------------------------------#
 """
 import collections
