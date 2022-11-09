@@ -1,39 +1,29 @@
-from JobList import JobList
-from gifflerandthompson import ScheduledTask, giffler_thompson
+from job_list import JobList
+from scheduling_giffler_thompson import ScheduledTask, giffler_thompson
 
 
 def main():
     #### Daten zum Testen aus Ablaufplanung (F. Jaehn, E. Pesch)
     jobs_data = [
-        [(2, 3), (1, 5), (3, 8), (0, 2)],
-        [(0, 6), (1, 4), (2, 2), (3, 5)],
-        [(1, 3), (0, 1), (2, 6), (3, 2)],
-        [(2, 3), (1, 7), (0, 5), (3, 1)],
-        [(3, 3), (2, 4), (1, 1), (0, 6)],
+        [(0, 5), (1, 3), (2, 3), (3, 2)],
+        [(1, 4), (0, 7), (2, 8), (3, 6)],
+        [(3, 3), (2, 5), (1, 6), (0, 1)],
+        [(2, 4), (3, 7), (1, 1), (0, 2)],
     ]
-
-    #    jobs_data = [
-    #     [(0, 5), (1, 3), (2, 3), (3, 2)],
-    #     [(1, 4), (0, 7), (2, 8), (3, 6)],
-    #     [(3, 3), (2, 5), (1, 6), (0, 1)],
-    #     [(2, 4), (3, 7), (1, 1), (0, 2)],
-    # ]
 
     jobs_data = JobList(jobs_data)
 
-    (schedule) = giffler_thompson(jobs_data)
+    schedule, schedule_list = giffler_thompson(jobs_data)
 
     get_saz_sez(schedule)
 
     critical_path = get_critical_path(schedule)
-    for x, _ in enumerate(critical_path):
-        print(critical_path[x])
+
+    print(critical_path)
 
 
 def get_critical_path(schedule):
     return [task for task in schedule if task.start == task.saz]
-    # print(schedule)
-
 
 def get_saz_sez(schedule: list[ScheduledTask]):
     schedule[-1].saz = schedule[-1].start
@@ -57,13 +47,20 @@ def get_saz_sez(schedule: list[ScheduledTask]):
             task.sez = schedule[-1].sez
 
         elif successor_job is None:
-            task.sez = successor_machine.saz
+            successor_machine_saz = successor_machine.saz
+
+            task.sez = successor_machine_saz
 
         elif successor_machine is None:
-            task.sez = successor_job.saz
+            successor_job_saz = successor_job.saz
+
+            task.sez = successor_job_saz
 
         else:
-            task.sez = min(successor_machine.saz, successor_job.saz)
+            successor_machine_saz = successor_machine.saz
+            successor_job_saz = successor_job.saz
+
+            task.sez = min(successor_machine_saz, successor_job_saz)
 
         task.saz = task.sez - task.duration
 
