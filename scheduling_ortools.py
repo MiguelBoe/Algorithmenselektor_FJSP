@@ -11,8 +11,7 @@
 import collections
 from pyexpat import model
 from ortools.sat.python import cp_model
-
-from JobList import JobList
+from jobList import JobList
 
 
 def parameters(jobs_data: list):
