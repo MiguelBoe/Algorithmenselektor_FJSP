@@ -1,14 +1,3 @@
-"""
-@author: pretz & böttcher
-
-#-----------------------------------------------------------------------------#
-#         Projektseminar Business Analytics - Wintersemester 22/23            #
-#-----------------------------------------------------------------------------#
-#                                                                             #
-#                             JobList Class                                   #
-#                                                                             #      
-#-----------------------------------------------------------------------------#
-"""
 import random
 from typing import Tuple
 
@@ -55,7 +44,7 @@ class JobList:
     def create(cls, max_duration, num_machines, num_jobs):
         """
         Erstellen eines Jobs, bestehend aus mehreren Tasks.
-        
+
         Parameters
         ----------
         max_duration : Int
@@ -63,7 +52,7 @@ class JobList:
 
         num_machines : Int
             Anzahl der verfügbaren Maschinen.
-        
+
         max_tasks : Int
             Maximale Anzahl an Tasks in einem generierten Job.
 
@@ -80,7 +69,8 @@ class JobList:
         for _ in range(num_jobs):
 
             # Zufällige Anzahl der Tasks in dem Job (min 1 Task, max so viele wie Maschinen)
-            num_tasks = random.randint(1, num_machines)
+
+            num_tasks = random.randint(2, num_machines)
 
             # Liste der verfügbaren Maschinen
             machine_list = list(range(num_machines))

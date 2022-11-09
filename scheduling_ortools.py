@@ -37,6 +37,7 @@ def variables(jobs_data: list, model_JSP):
         for task_id, task in enumerate(job):
             machine = task[0]
             duration = task[1]
+            
             suffix = "_%i_%i" % (job_id, task_id)
 
             # Intvariable
@@ -109,6 +110,7 @@ def solution(status, solver):
 
     if status in [cp_model.OPTIMAL, cp_model.FEASIBLE]:
         print("Solution:")
+
         # Create one list of assigned tasks per machine.
         assigned_jobs = collections.defaultdict(list)
         for job_id, job in enumerate(jobs_data):

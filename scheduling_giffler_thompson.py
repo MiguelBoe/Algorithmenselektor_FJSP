@@ -1,8 +1,6 @@
 from dataclasses import dataclass, field
 from typing import Tuple
-from JobList import JobList
-import plotly.figure_factory as ff
-
+from jobList import JobList
 
 @dataclass
 class Task:
@@ -27,7 +25,8 @@ def giffler_thompson(jobs_data: JobList) -> list[ScheduledTask]:
     """
 
     schedule = []
-    # dict_list = []
+
+    schedule_list = []
 
     # Liste der Tasksindizes welche nach Vorrangsbeziehungen zu Beginn verfügbar sind
     accessable_tasks_idx = [0] * len(jobs_data)
@@ -46,22 +45,18 @@ def giffler_thompson(jobs_data: JobList) -> list[ScheduledTask]:
     num_tasks_per_machine = [0] * num_machines
 
     # Solange irgendein Eintrag der Liste job_length ungleich des Eintrags an der gleichen Stelle in accessable_tasks_idx ist, sind noch nicht alle Tasks eingeplant
-    while any(
-        job_len != acc_idx for job_len, acc_idx in zip(job_length, accessable_tasks_idx)
-    ):
+
+    while any(job_len != acc_idx for job_len, acc_idx in zip(job_length, accessable_tasks_idx)):
 
         # Initialisieren der Liste der zuweisbaren Tasks
         accessable_tasks = get_accessable_tasks(accessable_tasks_idx, jobs_data)
 
         # Auswahl des Tasks, der nach Giffler und Thompson als nächstes zugewiesen werden soll
-        selected_task = choose_task(
-            accessable_tasks, access_time_machines, access_time_job
-        )
+
+        selected_task = choose_task(accessable_tasks, access_time_machines, access_time_job)
 
         # Kontrollieren ob mehr Tasks auf der gewählten Machine zuweisbar sind, als den ausgewählten Task
-        task_on_machine = get_machine_tasks(
-            task_list=accessable_tasks, machine_id=selected_task.machine_id
-        )
+        task_on_machine = get_machine_tasks(task_list=accessable_tasks, machine_id=selected_task.machine_id)
 
         # Wenn es mehr als einen zuweisbaren Job auf der ausgewählten Maschine gibt
         if len(task_on_machine) > 1:
@@ -69,10 +64,9 @@ def giffler_thompson(jobs_data: JobList) -> list[ScheduledTask]:
             selected_task = get_prio_task_LPT(task_on_machine, jobs_data)
 
         # Berechnung des Start- und Endwertes des ausgewählten Tasks
-        start = max(
-            access_time_machines[selected_task.machine_id],
-            access_time_job[selected_task.job_id],
-        )
+
+        start = max(access_time_machines[selected_task.machine_id], access_time_job[selected_task.job_id])
+
         end = start + selected_task.duration
 
         # Den ausgewählten Task in die dataclass ScheduledTask aufnehmen und um start und end erweitern
@@ -86,17 +80,16 @@ def giffler_thompson(jobs_data: JobList) -> list[ScheduledTask]:
             task_on_machine_idx=num_tasks_per_machine[selected_task.machine_id],
         )
 
-        # # scheduled_task zusätzlich als dict abspeichern
-        # schedule_dict = dict(
-        #     Task=f"Machine: {scheduled_task.machine_id}",
-        #     Start=scheduled_task.start,
-        #     Finish=scheduled_task.end,
-        #     Job=scheduled_task.job_id,
-        #     Resource=f"Task {scheduled_task.task_id} from job {scheduled_task.job_id}",
-        # )
+        # scheduled_task zusätzlich als dict abspeichern
+        schedule_list_entry = dict(
+            Task=scheduled_task.machine_id,
+            Start=scheduled_task.start,
+            Finish=scheduled_task.end,
+            Resource=f"Job_{scheduled_task.job_id}",
+        )
 
-        # # Den einzuplanenden Task dem Schedule hinzufügen (dict)
-        # dict_list.append(schedule_dict)
+        # Den einzuplanenden Task dem Schedule hinzufügen (dict)
+        schedule_list.append(schedule_list_entry)
 
         # Den einzuplanenden Task dem Schedule hinzufügen
         schedule.append(scheduled_task)
@@ -107,28 +100,29 @@ def giffler_thompson(jobs_data: JobList) -> list[ScheduledTask]:
         num_tasks_per_machine[selected_task.machine_id] += 1
 
         # Aktualisierung der aufgebrauchten Zeit an der Maschine und der Verfügbarkeit des Jobs
-        access_time_job, access_time_machines = update_access_times(
-            selected_task, access_time_machines, access_time_job
-        )
+
+        access_time_job, access_time_machines = update_access_times(selected_task, access_time_machines, access_time_job)
 
         # Aktualisierung der zuweisbaren Tasks
         accessable_tasks_idx[selected_task.job_id] += 1
 
-    return schedule
+
+    print(f'\nSolution found with a makespan of {end}')
+
+    return schedule, schedule_list
 
 
 def update_access_times(
-    selected_task: Task, access_time_machines: list, access_time_job: list
-) -> Tuple[list, list]:
+    selected_task: Task, access_time_machines: list, access_time_job: list) -> Tuple[list, list]:
+
     """ Aktualisieren der Zugangszeit der ausgewählten Maschine und des Jobs dessen Task zugewiesen wurde."""
 
     machine = selected_task.machine_id
     job = selected_task.job_id
 
     # Neue Zeit entspricht der Taskdauer + max( Maschinenzugangszeit, Jobzugangszeit)
-    new_accesstime = selected_task.duration + max(
-        access_time_machines[machine], access_time_job[job]
-    )
+
+    new_accesstime = selected_task.duration + max(access_time_machines[machine], access_time_job[job])
 
     access_time_machines[machine] = new_accesstime
     access_time_job[job] = new_accesstime
@@ -136,9 +130,9 @@ def update_access_times(
     return access_time_job, access_time_machines
 
 
-def choose_task(
-    accessable_tasks: list[Task], access_time_machines: list, access_time_job: list
-) -> Task:
+
+def choose_task(accessable_tasks: list[Task], access_time_machines: list, access_time_job: list) -> Task:
+
     """Auswahl der Maschine und des Tasks, der auf diese zugewiesen wird. """
 
     criteria = []
@@ -163,13 +157,10 @@ def get_accessable_tasks(accessable_tasks_idx: list, jobs_data: JobList) -> list
     """ Rausschrieben der zuweisbaren Tasks mit Hilfe der Indizes. """
     accessable_tasks = []
 
-    for job_id, (job, idx) in enumerate(
-        zip(jobs_data.list_of_jobs, accessable_tasks_idx)
-    ):
+
+    for job_id, (job, idx) in enumerate(zip(jobs_data.list_of_jobs, accessable_tasks_idx)):
         if idx in range(len(job)):
-            task = Task(
-                machine_id=job[idx][0], duration=job[idx][1], job_id=job_id, task_id=idx
-            )
+            task = Task(machine_id=job[idx][0], duration=job[idx][1], job_id=job_id, task_id=idx)
             accessable_tasks.append(task)
     return accessable_tasks
 
