@@ -27,7 +27,7 @@ def giffler_thompson(jobs_data: JobList) -> list[ScheduledTask]:
     """
 
     schedule = []
-    dict_list = []
+    # dict_list = []
 
     # Liste der Tasksindizes welche nach Vorrangsbeziehungen zu Beginn verfügbar sind
     accessable_tasks_idx = [0] * len(jobs_data)

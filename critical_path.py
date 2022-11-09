@@ -5,11 +5,19 @@ from gifflerandthompson import ScheduledTask, giffler_thompson
 def main():
     #### Daten zum Testen aus Ablaufplanung (F. Jaehn, E. Pesch)
     jobs_data = [
-        [(0, 5), (1, 3), (2, 3), (3, 2)],
-        [(1, 4), (0, 7), (2, 8), (3, 6)],
-        [(3, 3), (2, 5), (1, 6), (0, 1)],
-        [(2, 4), (3, 7), (1, 1), (0, 2)],
+        [(2, 3), (1, 5), (3, 8), (0, 2)],
+        [(0, 6), (1, 4), (2, 2), (3, 5)],
+        [(1, 3), (0, 1), (2, 6), (3, 2)],
+        [(2, 3), (1, 7), (0, 5), (3, 1)],
+        [(3, 3), (2, 4), (1, 1), (0, 6)],
     ]
+
+    #    jobs_data = [
+    #     [(0, 5), (1, 3), (2, 3), (3, 2)],
+    #     [(1, 4), (0, 7), (2, 8), (3, 6)],
+    #     [(3, 3), (2, 5), (1, 6), (0, 1)],
+    #     [(2, 4), (3, 7), (1, 1), (0, 2)],
+    # ]
 
     jobs_data = JobList(jobs_data)
 
@@ -18,8 +26,8 @@ def main():
     get_saz_sez(schedule)
 
     critical_path = get_critical_path(schedule)
-
-    print(critical_path)
+    for x, _ in enumerate(critical_path):
+        print(critical_path[x])
 
 
 def get_critical_path(schedule):
@@ -49,20 +57,13 @@ def get_saz_sez(schedule: list[ScheduledTask]):
             task.sez = schedule[-1].sez
 
         elif successor_job is None:
-            successor_machine_saz = successor_machine.saz
-
-            task.sez = successor_machine_saz
+            task.sez = successor_machine.saz
 
         elif successor_machine is None:
-            successor_job_saz = successor_job.saz
-
-            task.sez = successor_job_saz
+            task.sez = successor_job.saz
 
         else:
-            successor_machine_saz = successor_machine.saz
-            successor_job_saz = successor_job.saz
-
-            task.sez = min(successor_machine_saz, successor_job_saz)
+            task.sez = min(successor_machine.saz, successor_job.saz)
 
         task.saz = task.sez - task.duration
 
