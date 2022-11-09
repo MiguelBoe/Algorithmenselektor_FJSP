@@ -25,6 +25,7 @@ def giffler_thompson(jobs_data: JobList) -> list[ScheduledTask]:
     """
 
     schedule = []
+
     schedule_list = []
 
     # Liste der Tasksindizes welche nach Vorrangsbeziehungen zu Beginn verfügbar sind
@@ -44,12 +45,14 @@ def giffler_thompson(jobs_data: JobList) -> list[ScheduledTask]:
     num_tasks_per_machine = [0] * num_machines
 
     # Solange irgendein Eintrag der Liste job_length ungleich des Eintrags an der gleichen Stelle in accessable_tasks_idx ist, sind noch nicht alle Tasks eingeplant
+
     while any(job_len != acc_idx for job_len, acc_idx in zip(job_length, accessable_tasks_idx)):
 
         # Initialisieren der Liste der zuweisbaren Tasks
         accessable_tasks = get_accessable_tasks(accessable_tasks_idx, jobs_data)
 
         # Auswahl des Tasks, der nach Giffler und Thompson als nächstes zugewiesen werden soll
+
         selected_task = choose_task(accessable_tasks, access_time_machines, access_time_job)
 
         # Kontrollieren ob mehr Tasks auf der gewählten Machine zuweisbar sind, als den ausgewählten Task
@@ -61,7 +64,9 @@ def giffler_thompson(jobs_data: JobList) -> list[ScheduledTask]:
             selected_task = get_prio_task_LPT(task_on_machine, jobs_data)
 
         # Berechnung des Start- und Endwertes des ausgewählten Tasks
+
         start = max(access_time_machines[selected_task.machine_id], access_time_job[selected_task.job_id])
+
         end = start + selected_task.duration
 
         # Den ausgewählten Task in die dataclass ScheduledTask aufnehmen und um start und end erweitern
@@ -89,14 +94,18 @@ def giffler_thompson(jobs_data: JobList) -> list[ScheduledTask]:
         # Den einzuplanenden Task dem Schedule hinzufügen
         schedule.append(scheduled_task)
 
+        # print(f"Scheduled Task: {scheduled_task}")
+
         # Aktualisierung
         num_tasks_per_machine[selected_task.machine_id] += 1
 
         # Aktualisierung der aufgebrauchten Zeit an der Maschine und der Verfügbarkeit des Jobs
+
         access_time_job, access_time_machines = update_access_times(selected_task, access_time_machines, access_time_job)
 
         # Aktualisierung der zuweisbaren Tasks
         accessable_tasks_idx[selected_task.job_id] += 1
+
 
     print(f'\nSolution found with a makespan of {end}')
 
@@ -105,12 +114,14 @@ def giffler_thompson(jobs_data: JobList) -> list[ScheduledTask]:
 
 def update_access_times(
     selected_task: Task, access_time_machines: list, access_time_job: list) -> Tuple[list, list]:
+
     """ Aktualisieren der Zugangszeit der ausgewählten Maschine und des Jobs dessen Task zugewiesen wurde."""
 
     machine = selected_task.machine_id
     job = selected_task.job_id
 
     # Neue Zeit entspricht der Taskdauer + max( Maschinenzugangszeit, Jobzugangszeit)
+
     new_accesstime = selected_task.duration + max(access_time_machines[machine], access_time_job[job])
 
     access_time_machines[machine] = new_accesstime
@@ -119,7 +130,9 @@ def update_access_times(
     return access_time_job, access_time_machines
 
 
+
 def choose_task(accessable_tasks: list[Task], access_time_machines: list, access_time_job: list) -> Task:
+
     """Auswahl der Maschine und des Tasks, der auf diese zugewiesen wird. """
 
     criteria = []
@@ -143,6 +156,7 @@ def choose_task(accessable_tasks: list[Task], access_time_machines: list, access
 def get_accessable_tasks(accessable_tasks_idx: list, jobs_data: JobList) -> list[Task]:
     """ Rausschrieben der zuweisbaren Tasks mit Hilfe der Indizes. """
     accessable_tasks = []
+
 
     for job_id, (job, idx) in enumerate(zip(jobs_data.list_of_jobs, accessable_tasks_idx)):
         if idx in range(len(job)):
@@ -181,3 +195,30 @@ def get_prio_task_SPT(task_on_machine: list[Task], jobs_data: JobList) -> Task:
             job_duration = jobs_duration[task.job_id]
             selected_task = task
     return selected_task
+
+
+#### Daten zum Testen aus Ablaufplanung (F. Jaehn, E. Pesch)
+# jobs_data = [
+#     [(0, 5), (1, 3), (2, 3), (3, 2)],
+#     [(1, 4), (0, 7), (2, 8), (3, 6)],
+#     [(3, 3), (2, 5), (1, 6), (0, 1)],
+#     [(2, 4), (3, 7), (1, 1), (0, 2)],
+# ]
+
+# jobs_data = [
+#     [(0, 2), (1, 3), (2, 8)],
+#     [(0, 4), (1, 5), (2, 3)],
+#     [(0, 2), (1, 4), (2, 5)],
+#     [(0, 6), (1, 5), (2, 3)],
+# ]
+
+# #jobs_data = [
+#     [(0, 2), (1, 3), (2, 8)],
+#     [(2, 3), (0, 4), (1, 5)],
+#     [(1, 4), (0, 2), (2, 5)],
+#     [(2, 3), (1, 5), (0, 6) ],
+# ]
+
+# jobs_data = JobList(jobs_data)
+
+# (schedule, dict_list,) = giffler_thompson(jobs_data)

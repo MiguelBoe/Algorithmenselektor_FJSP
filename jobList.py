@@ -69,6 +69,7 @@ class JobList:
         for _ in range(num_jobs):
 
             # Zufällige Anzahl der Tasks in dem Job (min 1 Task, max so viele wie Maschinen)
+
             num_tasks = random.randint(2, num_machines)
 
             # Liste der verfügbaren Maschinen
