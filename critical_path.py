@@ -1,4 +1,4 @@
-from job_list import JobList
+from jobList import JobList
 from scheduling_giffler_thompson import ScheduledTask, giffler_thompson
 
 

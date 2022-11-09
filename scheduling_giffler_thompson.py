@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from typing import Tuple
-from job_list import JobList
+from jobList import JobList
 
 @dataclass
 class Task:

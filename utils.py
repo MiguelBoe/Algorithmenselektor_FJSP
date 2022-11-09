@@ -1,7 +1,6 @@
 import random
-from random import randrange
 import pickle
-from job_list import JobList
+from jobList import JobList
 
 
 def job_generator(max_job_count, max_machine_count, max_duration):
