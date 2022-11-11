@@ -1,5 +1,5 @@
-from JobList import JobList
-from gifflerandthompson import ScheduledTask, giffler_thompson
+from jobList import JobList
+from scheduling_giffler_thompson import ScheduledTask, giffler_thompson
 
 
 def main():

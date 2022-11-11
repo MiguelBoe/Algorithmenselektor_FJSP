@@ -1,6 +1,6 @@
 import pickle
 import random
-from JobList import JobList
+from jobList import JobList
 
 
 def main():
