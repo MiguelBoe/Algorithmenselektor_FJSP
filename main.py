@@ -12,10 +12,11 @@
 
 from utils import *
 from scheduling_ortools import *
-from scheduling_giffler_thompson import giffler_thompson, get_earliest_start, get_successor, get_latest_finish, get_critical_pathh
+from scheduling_giffler_thompson import giffler_thompson
 import plotly.figure_factory as ff
 #from critical_path import get_critical_path, get_saz_sez
-from critical_pathh import get_critical_path
+from critical_path import get_critical_path
+import time
 
 # Config
 solver = "meta"  # google, meta
@@ -37,20 +38,13 @@ if solver == "google":
     assigned_jobs, all_machines = ortools_scheduler(data[0].list_of_jobs)
     schedule_list = visualize_schedule(assigned_jobs=assigned_jobs, all_machines=all_machines, plan_date=0)
 elif solver == "meta":
+    start_time = time.time()
     data = JobList(data)
     schedule, schedule_list = giffler_thompson(data)
-
-    get_earliest_start(schedule)
-    #get_successor(schedule)
-    #get_latest_finish(schedule)
-    get_critical_path(schedule)
-    cp=get_critical_pathh(schedule)
-
-
+    critical_path = get_critical_path(schedule)
+    print((time.time() - start_time))
 
 # Visualization
 fig = ff.create_gantt(schedule_list, index_col="Resource", show_colorbar=True, group_tasks=True)
 fig.layout.xaxis.type = "linear"
 fig.show()
-
-print()

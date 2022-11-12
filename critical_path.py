@@ -1,67 +1,58 @@
-from jobList import JobList
-from scheduling_giffler_thompson import ScheduledTask, giffler_thompson
+def topologicalSortUtil(v, Stack, visited, adj):
+
+    visited[v] = True
+
+    for i in adj[v]:
+        if (not visited[i[0]]):
+            topologicalSortUtil(i[0])
+
+    Stack.append(v)
 
 
-def main():
-    #### Daten zum Testen aus Ablaufplanung (F. Jaehn, E. Pesch)
-    jobs_data = [
-        [(0, 5), (1, 3), (2, 3), (3, 2)],
-        [(1, 4), (0, 7), (2, 8), (3, 6)],
-        [(3, 3), (2, 5), (1, 6), (0, 1)],
-        [(2, 4), (3, 7), (1, 1), (0, 2)],
-    ]
+def longestPath(end_node, V, Stack, visited, adj, schedule):
 
-    jobs_data = JobList(jobs_data)
+    dist = [-10 ** 9 for i in range(V)]
 
-    schedule, schedule_list = giffler_thompson(jobs_data)
+    for v in range(V):
+        if (visited[v] == False):
+            topologicalSortUtil(v, Stack, visited, adj)
 
-    get_saz_sez(schedule)
+    dist[end_node] = 0
 
-    critical_path = get_critical_path(schedule)
+    while (len(Stack) > 0):
 
-    print(critical_path)
+        u = Stack[-1]
+        del Stack[-1]
+
+        if (dist[u] != 10 ** 9):
+            for i in adj[u]:
+                if (dist[i[0]] < dist[u] + i[1]):
+                    dist[i[0]] = dist[u] + i[1]
+
+    for i in range(V):
+        schedule[i].q = dist[i]
+
+
+def get_earliest_start(schedule):
+    for i in list(schedule.keys()):
+        pred_start_times=[schedule[x].end for x in schedule[i].pred]
+        pred_start_times.append(0)
+        schedule[i].r=max(pred_start_times)
 
 
 def get_critical_path(schedule):
-    return [task for task in schedule if task.start == task.saz]
+    V, Stack, visited = len(schedule), [], [False for i in range(len(schedule))]
+    adj = [[] for i in range(V)]
 
-def get_saz_sez(schedule: list[ScheduledTask]):
-    schedule[-1].saz = schedule[-1].start
-    schedule[-1].sez = schedule[-1].end
+    get_earliest_start(schedule)
 
-    # Frühester Anfangs und Endzeitpunkt
-    for task in reversed(schedule[:-1]):
-        # finde Nachfolgertasks nachfolger im job und nachfolger auf maschine
-        successor_job = None
-        successor_machine = None
+    for i in list(schedule.keys()):
+        for k in schedule[i].pred:
+            if schedule[i].start == schedule[k].end:
+                adj[i].append([k,schedule[i].duration])
 
-        for task2 in reversed(schedule):
-            if task2.machine_id == task.machine_id and task2.task_on_machine_idx == (task.task_on_machine_idx + 1):
-                successor_machine = task2
-            if task2.job_id == task.job_id and task2.task_id == (task.task_id + 1):
-                successor_job = task2
+    end_node = V-1
+    makespan = schedule[end_node].end
+    longestPath(end_node, V, Stack, visited, adj, schedule)
 
-        if successor_job is None and successor_machine is None:
-            task.sez = schedule[-1].sez
-
-        elif successor_job is None:
-            successor_machine_saz = successor_machine.saz
-
-            task.sez = successor_machine_saz
-
-        elif successor_machine is None:
-            successor_job_saz = successor_job.saz
-
-            task.sez = successor_job_saz
-
-        else:
-            successor_machine_saz = successor_machine.saz
-            successor_job_saz = successor_job.saz
-
-            task.sez = min(successor_machine_saz, successor_job_saz)
-
-        task.saz = task.sez - task.duration
-
-
-if __name__ == "__main__":
-    main()
+    return [v for k, v in schedule.items() if v.r + v.duration + v.q == makespan]

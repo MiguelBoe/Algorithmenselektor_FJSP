@@ -1,7 +1,8 @@
+import time
+
 from dataclasses import dataclass, field
-from typing import Tuple, List
+from typing import Tuple
 from jobList import JobList
-import numpy as np
 
 @dataclass
 class Task:
@@ -13,13 +14,11 @@ class Task:
 
 @dataclass
 class ScheduledTask(Task):
-    op_id: int = field(default=0)
-    start: int = field(default=0)
-    end: int = field(default=0)
-    task_on_machine_idx: int = field(default=0)
-    r: int = field(init=False, default=0)
-    q: int = field(init=False, default=0)
-    pred: List = field(default_factory=lambda: [])
+    start: int
+    end: int
+    task_on_machine_idx: int
+    saz: int = field(init=False, default=0)
+    sez: int = field(init=False, default=0)
 
 
 def giffler_thompson(jobs_data: JobList) -> list[ScheduledTask]:
@@ -27,7 +26,7 @@ def giffler_thompson(jobs_data: JobList) -> list[ScheduledTask]:
     Berechnung eines Schedules mittels des Giffler und Thompson Algorithmus
     """
 
-    schedule = {}
+    schedule = []
 
     schedule_list = []
 
@@ -48,7 +47,7 @@ def giffler_thompson(jobs_data: JobList) -> list[ScheduledTask]:
     num_tasks_per_machine = [0] * num_machines
 
     # Solange irgendein Eintrag der Liste job_length ungleich des Eintrags an der gleichen Stelle in accessable_tasks_idx ist, sind noch nicht alle Tasks eingeplant
-    i=0
+
     while any(job_len != acc_idx for job_len, acc_idx in zip(job_length, accessable_tasks_idx)):
 
         # Initialisieren der Liste der zuweisbaren Tasks
@@ -81,9 +80,7 @@ def giffler_thompson(jobs_data: JobList) -> list[ScheduledTask]:
             start=start,
             end=end,
             task_on_machine_idx=num_tasks_per_machine[selected_task.machine_id],
-            op_id = i,
-            pred=get_predecessor(schedule=schedule, task_id=selected_task.task_id, task_on_machine_idx=num_tasks_per_machine[selected_task.machine_id], machine_id=selected_task.machine_id, job_id=selected_task.job_id),
-            )
+        )
 
         # scheduled_task zusätzlich als dict abspeichern
         schedule_list_entry = dict(
@@ -97,7 +94,7 @@ def giffler_thompson(jobs_data: JobList) -> list[ScheduledTask]:
         schedule_list.append(schedule_list_entry)
 
         # Den einzuplanenden Task dem Schedule hinzufügen
-        schedule.update({i:scheduled_task})
+        schedule.append(scheduled_task)
 
         # print(f"Scheduled Task: {scheduled_task}")
 
@@ -110,8 +107,6 @@ def giffler_thompson(jobs_data: JobList) -> list[ScheduledTask]:
 
         # Aktualisierung der zuweisbaren Tasks
         accessable_tasks_idx[selected_task.job_id] += 1
-
-        i+=1
 
 
     print(f'\nSolution found with a makespan of {end}')
@@ -127,7 +122,7 @@ def update_access_times(
     machine = selected_task.machine_id
     job = selected_task.job_id
 
-    # Neue Zeit entspricht der Taskdauer + max(Maschinenzugangszeit, Jobzugangszeit)
+    # Neue Zeit entspricht der Taskdauer + max( Maschinenzugangszeit, Jobzugangszeit)
 
     new_accesstime = selected_task.duration + max(access_time_machines[machine], access_time_job[job])
 
@@ -204,11 +199,6 @@ def get_prio_task_SPT(task_on_machine: list[Task], jobs_data: JobList) -> Task:
     return selected_task
 
 
-def get_predecessor(schedule,task_id, task_on_machine_idx, machine_id, job_id):
-    return [k for k, v in schedule.items() if (v.job_id == job_id and v.task_id ==task_id-1) or
-            (v.machine_id==machine_id and v.task_on_machine_idx==task_on_machine_idx-1)]
-
-
 #### Daten zum Testen aus Ablaufplanung (F. Jaehn, E. Pesch)
 # jobs_data = [
 #     [(0, 5), (1, 3), (2, 3), (3, 2)],
@@ -234,3 +224,69 @@ def get_predecessor(schedule,task_id, task_on_machine_idx, machine_id, job_id):
 # jobs_data = JobList(jobs_data)
 
 # (schedule, dict_list,) = giffler_thompson(jobs_data)
+
+def main():
+    #### Daten zum Testen aus Ablaufplanung (F. Jaehn, E. Pesch)
+    jobs_data = [  # task = (machine_id, processing_time).
+        [(0, 5), (1, 3), (2, 3), (3, 2)],  # Job0
+        [(1, 4), (0, 7), (2, 8), (3, 6)],  # Job1
+        [(3, 3), (2, 5), (1, 6), (0, 1)],  # Job2
+        [(2, 4), (3, 7), (1, 1), (0, 2)],  # Job2
+    ]
+
+    jobs_data = JobList(jobs_data)
+
+    schedule, schedule_list = giffler_thompson(jobs_data)
+
+    get_saz_sez(schedule)
+
+    critical_path = get_critical_path(schedule)
+
+    print(critical_path)
+
+
+def get_critical_path(schedule):
+    return [task for task in schedule if task.start == task.saz]
+
+def get_saz_sez(schedule: list[ScheduledTask]):
+    schedule[-1].saz = schedule[-1].start
+    schedule[-1].sez = schedule[-1].end
+
+    # Frühester Anfangs und Endzeitpunkt
+    for task in reversed(schedule[:-1]):
+        # finde Nachfolgertasks nachfolger im job und nachfolger auf maschine
+        successor_job = None
+        successor_machine = None
+
+        for task2 in reversed(schedule):
+            if task2.machine_id == task.machine_id and task2.task_on_machine_idx == (task.task_on_machine_idx + 1):
+                successor_machine = task2
+            if task2.job_id == task.job_id and task2.task_id == (task.task_id + 1):
+                successor_job = task2
+
+        if successor_job is None and successor_machine is None:
+            task.sez = schedule[-1].sez
+
+        elif successor_job is None:
+            successor_machine_saz = successor_machine.saz
+
+            task.sez = successor_machine_saz
+
+        elif successor_machine is None:
+            successor_job_saz = successor_job.saz
+
+            task.sez = successor_job_saz
+
+        else:
+            successor_machine_saz = successor_machine.saz
+            successor_job_saz = successor_job.saz
+
+            task.sez = min(successor_machine_saz, successor_job_saz)
+
+        task.saz = task.sez - task.duration
+
+
+if __name__ == "__main__":
+    start_time = time.time()
+    main()
+    print((time.time() - start_time))
