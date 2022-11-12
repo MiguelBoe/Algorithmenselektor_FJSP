@@ -12,9 +12,10 @@
 
 from utils import *
 from scheduling_ortools import *
-from scheduling_giffler_thompson import giffler_thompson
+from scheduling_giffler_thompson import giffler_thompson, get_earliest_start, get_successor, get_latest_finish, get_critical_pathh
 import plotly.figure_factory as ff
-from critical_path import get_critical_path, get_saz_sez
+#from critical_path import get_critical_path, get_saz_sez
+from critical_pathh import get_critical_path
 
 # Config
 solver = "meta"  # google, meta
@@ -38,26 +39,18 @@ if solver == "google":
 elif solver == "meta":
     data = JobList(data)
     schedule, schedule_list = giffler_thompson(data)
-    #get_saz_sez(schedule)
-    #critical_path = get_critical_path(schedule)
 
-    # test1 = schedule[10]
-    # test2 = schedule[12]
-    # test2.start = test1.start
-    # test2.end = test2.start + test2.duration
-    # test1.start = test2.end
-    # test1.end = test1.start + test1.duration
-    # test1.task_on_machine_idx = 2
-    # test2.task_on_machine_idx = 1
-    #
-    # for x in schedule:
-    #     x.saz = 0
-    #     x.sez = 0
-    #
-    #
-    # get_saz_sez(schedule)
+    get_earliest_start(schedule)
+    #get_successor(schedule)
+    #get_latest_finish(schedule)
+    get_critical_path(schedule)
+    cp=get_critical_pathh(schedule)
+
+
 
 # Visualization
 fig = ff.create_gantt(schedule_list, index_col="Resource", show_colorbar=True, group_tasks=True)
 fig.layout.xaxis.type = "linear"
 fig.show()
+
+print()

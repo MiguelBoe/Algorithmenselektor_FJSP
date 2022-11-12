@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Tuple, List
 from jobList import JobList
+import numpy as np
 
 @dataclass
 class Task:
@@ -16,9 +17,10 @@ class ScheduledTask(Task):
     start: int = field(default=0)
     end: int = field(default=0)
     task_on_machine_idx: int = field(default=0)
-    saz: int = field(init=False, default=0)
-    sez: int = field(init=False, default=0)
+    r: int = field(init=False, default=0)
+    q: int = field(init=False, default=0)
     pred: List = field(default_factory=lambda: [])
+    #succ: List = field(default_factory=lambda: [])
 
 
 def giffler_thompson(jobs_data: JobList) -> list[ScheduledTask]:
@@ -26,7 +28,7 @@ def giffler_thompson(jobs_data: JobList) -> list[ScheduledTask]:
     Berechnung eines Schedules mittels des Giffler und Thompson Algorithmus
     """
 
-    schedule = []
+    schedule = {}
 
     schedule_list = []
 
@@ -81,8 +83,8 @@ def giffler_thompson(jobs_data: JobList) -> list[ScheduledTask]:
             end=end,
             task_on_machine_idx=num_tasks_per_machine[selected_task.machine_id],
             op_id = i,
-            pred=get_predecessor(schedule=schedule, task_id=selected_task.task_id, task_on_machine_idx=num_tasks_per_machine[selected_task.machine_id], machine_id=selected_task.machine_id, job_id=selected_task.job_id)
-        )
+            pred=get_predecessor(schedule=schedule, task_id=selected_task.task_id, task_on_machine_idx=num_tasks_per_machine[selected_task.machine_id], machine_id=selected_task.machine_id, job_id=selected_task.job_id),
+            )
 
         # scheduled_task zusätzlich als dict abspeichern
         schedule_list_entry = dict(
@@ -96,7 +98,7 @@ def giffler_thompson(jobs_data: JobList) -> list[ScheduledTask]:
         schedule_list.append(schedule_list_entry)
 
         # Den einzuplanenden Task dem Schedule hinzufügen
-        schedule.append(scheduled_task)
+        schedule.update({i:scheduled_task})
 
         # print(f"Scheduled Task: {scheduled_task}")
 
@@ -126,7 +128,7 @@ def update_access_times(
     machine = selected_task.machine_id
     job = selected_task.job_id
 
-    # Neue Zeit entspricht der Taskdauer + max( Maschinenzugangszeit, Jobzugangszeit)
+    # Neue Zeit entspricht der Taskdauer + max(Maschinenzugangszeit, Jobzugangszeit)
 
     new_accesstime = selected_task.duration + max(access_time_machines[machine], access_time_job[job])
 
@@ -203,10 +205,31 @@ def get_prio_task_SPT(task_on_machine: list[Task], jobs_data: JobList) -> Task:
     return selected_task
 
 def get_predecessor(schedule,task_id, task_on_machine_idx, machine_id, job_id):
+    return [k for k, v in schedule.items() if (v.job_id == job_id and v.task_id ==task_id-1) or
+            (v.machine_id==machine_id and v.task_on_machine_idx==task_on_machine_idx-1)]
 
-    predecessor = list(x.op_id for x in schedule if (x.job_id == job_id and x.task_id ==task_id-1) or (x.machine_id==machine_id and x.task_on_machine_idx==task_on_machine_idx-1))
+def get_earliest_start(schedule):
+    for i in list(schedule.keys()):
+        pred_start_times=[schedule[x].end for x in schedule[i].pred]
+        pred_start_times.append(0)
+        schedule[i].r=max(pred_start_times)
 
-    return predecessor
+def get_successor(schedule):
+    for k, v in schedule.items():
+        for i in v.pred:
+            schedule[i].succ.append(k)
+
+def get_latest_finish(schedule):
+    for i in list(schedule.keys()):
+        succ_start_times=[schedule[x].start for x in schedule[i].succ]
+        succ_start_times.append(35)
+        schedule[i].q=min(succ_start_times)
+
+def get_critical_pathh(schedule):
+    return [v for k,v in schedule.items() if v.r + v.duration + v.q == 35]
+
+
+
 
 #### Daten zum Testen aus Ablaufplanung (F. Jaehn, E. Pesch)
 # jobs_data = [
