@@ -36,9 +36,7 @@ def get_saz_sez(schedule: list[ScheduledTask]):
         successor_machine = None
 
         for task2 in reversed(schedule):
-            if task2.machine_id == task.machine_id and task2.task_on_machine_idx == (
-                task.task_on_machine_idx + 1
-            ):
+            if task2.machine_id == task.machine_id and task2.task_on_machine_idx == (task.task_on_machine_idx + 1):
                 successor_machine = task2
             if task2.job_id == task.job_id and task2.task_id == (task.task_id + 1):
                 successor_job = task2

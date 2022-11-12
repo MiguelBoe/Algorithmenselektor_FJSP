@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Tuple
+from typing import Tuple, List
 from jobList import JobList
 
 @dataclass
@@ -12,11 +12,13 @@ class Task:
 
 @dataclass
 class ScheduledTask(Task):
-    start: int
-    end: int
-    task_on_machine_idx: int
+    op_id: int = field(default=0)
+    start: int = field(default=0)
+    end: int = field(default=0)
+    task_on_machine_idx: int = field(default=0)
     saz: int = field(init=False, default=0)
     sez: int = field(init=False, default=0)
+    pred: List = field(default_factory=lambda: [])
 
 
 def giffler_thompson(jobs_data: JobList) -> list[ScheduledTask]:
@@ -45,7 +47,7 @@ def giffler_thompson(jobs_data: JobList) -> list[ScheduledTask]:
     num_tasks_per_machine = [0] * num_machines
 
     # Solange irgendein Eintrag der Liste job_length ungleich des Eintrags an der gleichen Stelle in accessable_tasks_idx ist, sind noch nicht alle Tasks eingeplant
-
+    i=0
     while any(job_len != acc_idx for job_len, acc_idx in zip(job_length, accessable_tasks_idx)):
 
         # Initialisieren der Liste der zuweisbaren Tasks
@@ -78,6 +80,8 @@ def giffler_thompson(jobs_data: JobList) -> list[ScheduledTask]:
             start=start,
             end=end,
             task_on_machine_idx=num_tasks_per_machine[selected_task.machine_id],
+            op_id = i,
+            pred=get_predecessor(schedule=schedule, task_id=selected_task.task_id, task_on_machine_idx=num_tasks_per_machine[selected_task.machine_id], machine_id=selected_task.machine_id, job_id=selected_task.job_id)
         )
 
         # scheduled_task zusätzlich als dict abspeichern
@@ -105,6 +109,8 @@ def giffler_thompson(jobs_data: JobList) -> list[ScheduledTask]:
 
         # Aktualisierung der zuweisbaren Tasks
         accessable_tasks_idx[selected_task.job_id] += 1
+
+        i+=1
 
 
     print(f'\nSolution found with a makespan of {end}')
@@ -196,6 +202,11 @@ def get_prio_task_SPT(task_on_machine: list[Task], jobs_data: JobList) -> Task:
             selected_task = task
     return selected_task
 
+def get_predecessor(schedule,task_id, task_on_machine_idx, machine_id, job_id):
+
+    predecessor = list(x.op_id for x in schedule if (x.job_id == job_id and x.task_id ==task_id-1) or (x.machine_id==machine_id and x.task_on_machine_idx==task_on_machine_idx-1))
+
+    return predecessor
 
 #### Daten zum Testen aus Ablaufplanung (F. Jaehn, E. Pesch)
 # jobs_data = [
