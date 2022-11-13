@@ -43,6 +43,37 @@ elif solver == "meta":
     critical_path = get_critical_path(schedule)
     print((time.time() - start_time))
 
+
+    test1 = schedule[10]
+    test2 = schedule[12]
+
+    test2.task_on_machine_idx = 1
+    test1.task_on_machine_idx = 2
+
+    def get_predecessor(schedule, task_id, task_on_machine_idx, machine_id, job_id):
+        return [k for k, v in schedule.items() if (v.job_id == job_id and v.task_id == task_id - 1) or
+                (v.machine_id == machine_id and v.task_on_machine_idx == task_on_machine_idx - 1)]
+
+    test1.pred = get_predecessor(schedule = schedule, task_id = test1.task_id, task_on_machine_idx = test1.task_on_machine_idx, machine_id = test1.machine_id, job_id = test1.job_id)
+    test2.pred = get_predecessor(schedule=schedule, task_id=test2.task_id, task_on_machine_idx=test2.task_on_machine_idx, machine_id=test2.machine_id, job_id=test2.job_id)
+
+
+    def get_earliest_start(schedule):
+        for i in list(schedule.keys()):
+            pred_start_times = [schedule[x].end for x in schedule[i].pred]
+            pred_start_times.append(0)
+            schedule[i].start = max(pred_start_times)
+            schedule[i].end = schedule[i].start + schedule[i].duration
+
+
+    get_earliest_start(schedule)
+
+    testss = []
+    for k,v in schedule.items():
+        testss.append({'Task':v.machine_id, 'Start':v.start, 'Finish':v.end, 'Resource': f'Job_{v.job_id}'})
+
+
+
 # Visualization
 fig = ff.create_gantt(schedule_list, index_col="Resource", show_colorbar=True, group_tasks=True)
 fig.layout.xaxis.type = "linear"
