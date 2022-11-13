@@ -14,7 +14,6 @@ from utils import *
 from scheduling_ortools import *
 from scheduling_giffler_thompson import giffler_thompson
 import plotly.figure_factory as ff
-#from critical_path import get_critical_path, get_saz_sez
 from critical_path import get_critical_path
 import time
 
@@ -48,3 +47,5 @@ elif solver == "meta":
 fig = ff.create_gantt(schedule_list, index_col="Resource", show_colorbar=True, group_tasks=True)
 fig.layout.xaxis.type = "linear"
 fig.show()
+
+print()

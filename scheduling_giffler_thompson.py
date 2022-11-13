@@ -13,12 +13,10 @@ class Task:
 
 @dataclass
 class ScheduledTask(Task):
-    op_id: int = field(default=0)
     start: int = field(default=0)
     end: int = field(default=0)
     task_on_machine_idx: int = field(default=0)
-    r: int = field(init=False, default=0)
-    q: int = field(init=False, default=0)
+    longest_path: int = field(init=False, default=0)
     pred: List = field(default_factory=lambda: [])
 
 
@@ -81,7 +79,6 @@ def giffler_thompson(jobs_data: JobList) -> list[ScheduledTask]:
             start=start,
             end=end,
             task_on_machine_idx=num_tasks_per_machine[selected_task.machine_id],
-            op_id = i,
             pred=get_predecessor(schedule=schedule, task_id=selected_task.task_id, task_on_machine_idx=num_tasks_per_machine[selected_task.machine_id], machine_id=selected_task.machine_id, job_id=selected_task.job_id),
             )
 
@@ -112,7 +109,6 @@ def giffler_thompson(jobs_data: JobList) -> list[ScheduledTask]:
         accessable_tasks_idx[selected_task.job_id] += 1
 
         i+=1
-
 
     print(f'\nSolution found with a makespan of {end}')
 
