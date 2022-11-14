@@ -15,6 +15,7 @@ from scheduling_ortools import *
 from scheduling_giffler_thompson import giffler_thompson
 import plotly.figure_factory as ff
 from critical_path import get_critical_path
+from scheduling_giffler_thompson import get_predecessor
 import time
 
 # Config
@@ -46,16 +47,17 @@ elif solver == "meta":
 
     test1 = schedule[10]
     test2 = schedule[12]
-
+    # test2.start = test1.start
+    # test2.end = test2.start + test2.duration
+    # test1.start = test2.end
+    # test1.end = test1.start + test1.duration
     test2.task_on_machine_idx = 1
     test1.task_on_machine_idx = 2
-
-    def get_predecessor(schedule, task_id, task_on_machine_idx, machine_id, job_id):
-        return [k for k, v in schedule.items() if (v.job_id == job_id and v.task_id == task_id - 1) or
-                (v.machine_id == machine_id and v.task_on_machine_idx == task_on_machine_idx - 1)]
-
     test1.pred = get_predecessor(schedule = schedule, task_id = test1.task_id, task_on_machine_idx = test1.task_on_machine_idx, machine_id = test1.machine_id, job_id = test1.job_id)
     test2.pred = get_predecessor(schedule=schedule, task_id=test2.task_id, task_on_machine_idx=test2.task_on_machine_idx, machine_id=test2.machine_id, job_id=test2.job_id)
+
+    #for i in list(schedule.keys()):
+    #    schedule[i].pred = get_predecessor(schedule=schedule, task_id=schedule[i].task_id, task_on_machine_idx=schedule[i].task_on_machine_idx, machine_id=schedule[i].machine_id, job_id=schedule[i].job_id)
 
 
     def get_earliest_start(schedule):
@@ -75,7 +77,7 @@ elif solver == "meta":
 
 
 # Visualization
-fig = ff.create_gantt(schedule_list, index_col="Resource", show_colorbar=True, group_tasks=True)
+fig = ff.create_gantt(testss, index_col="Resource", show_colorbar=True, group_tasks=True)
 fig.layout.xaxis.type = "linear"
 fig.show()
 
