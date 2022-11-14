@@ -41,3 +41,9 @@ def visualize_schedule(assigned_jobs, all_machines, plan_date):
             schedule_list.append(temp)
     schedule_list.sort(key = lambda x: x['Task'])
     return schedule_list
+
+def get_schedule_list(schedule):
+    schedule_list = []
+    for k,v in schedule.items():
+        schedule_list.append({'Task':v.machine_id, 'Start':v.start, 'Finish':v.end, 'Resource': f'Job_{v.job_id}'})
+    return schedule_list

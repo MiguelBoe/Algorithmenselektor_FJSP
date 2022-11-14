@@ -82,17 +82,6 @@ def giffler_thompson(jobs_data: JobList) -> list[ScheduledTask]:
             pred=get_predecessor(schedule=schedule, task_id=selected_task.task_id, task_on_machine_idx=num_tasks_per_machine[selected_task.machine_id], machine_id=selected_task.machine_id, job_id=selected_task.job_id),
             )
 
-        # scheduled_task zusätzlich als dict abspeichern
-        schedule_list_entry = dict(
-            Task=scheduled_task.machine_id,
-            Start=scheduled_task.start,
-            Finish=scheduled_task.end,
-            Resource=f"Job_{scheduled_task.job_id}",
-        )
-
-        # Den einzuplanenden Task dem Schedule hinzufügen (dict)
-        schedule_list.append(schedule_list_entry)
-
         # Den einzuplanenden Task dem Schedule hinzufügen
         schedule.update({i:scheduled_task})
 
@@ -112,7 +101,7 @@ def giffler_thompson(jobs_data: JobList) -> list[ScheduledTask]:
 
     print(f'\nSolution found with a makespan of {end}')
 
-    return schedule, schedule_list
+    return schedule
 
 
 def update_access_times(

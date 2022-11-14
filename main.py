@@ -40,7 +40,7 @@ if solver == "google":
 elif solver == "meta":
     start_time = time.time()
     data = JobList(data)
-    schedule, schedule_list = giffler_thompson(data)
+    schedule = giffler_thompson(data)
     critical_path = get_critical_path(schedule)
     print((time.time() - start_time))
 
@@ -67,17 +67,13 @@ elif solver == "meta":
             schedule[i].start = max(pred_start_times)
             schedule[i].end = schedule[i].start + schedule[i].duration
 
-
     get_earliest_start(schedule)
 
-    testss = []
-    for k,v in schedule.items():
-        testss.append({'Task':v.machine_id, 'Start':v.start, 'Finish':v.end, 'Resource': f'Job_{v.job_id}'})
 
-
+    schedule_list = get_schedule_list(schedule)
 
 # Visualization
-fig = ff.create_gantt(testss, index_col="Resource", show_colorbar=True, group_tasks=True)
+fig = ff.create_gantt(schedule_list, index_col="Resource", show_colorbar=True, group_tasks=True)
 fig.layout.xaxis.type = "linear"
 fig.show()
 
