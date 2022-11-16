@@ -1,7 +1,8 @@
 from scheduling_giffler_thompson import get_predecessor
+import copy
 
 def get_neighbor_solution(schedule, critical_path):
-    neighbor_solution = schedule.copy()
+    neighbor_solution = copy.deepcopy(schedule)
     disjunctive_arcs = find_disjunctive_arcs(critical_path)
 
     for arc in list(disjunctive_arcs.keys()):
@@ -22,7 +23,7 @@ def find_disjunctive_arcs(critical_path):
                     ((critical_operations[i].task_on_machine_idx == critical_operations[j].task_on_machine_idx -1) or \
                     (critical_operations[i].task_on_machine_idx == critical_operations[j].task_on_machine_idx +1)):
                 disjunctive_arcs.update({key:{'i':i, 'j':j}})
-                print(f'{i} und  {j}')
+                print(f'{i} und {j}')
                 key = + 1
         keys.remove(i)
     return disjunctive_arcs
@@ -48,4 +49,3 @@ def get_earliest_start(neighbor_solution, keys):
         pred_start_times.append(0)
         neighbor_solution[i].start = max(pred_start_times)
         neighbor_solution[i].end = neighbor_solution[i].start + neighbor_solution[i].duration
-
