@@ -16,6 +16,7 @@ from scheduling_giffler_thompson import giffler_thompson
 import plotly.figure_factory as ff
 from critical_path import get_critical_path
 from scheduling_giffler_thompson import get_predecessor
+from neighborhood import *
 import time
 
 # Config
@@ -45,29 +46,7 @@ elif solver == "meta":
     print((time.time() - start_time))
 
 
-    test1 = schedule[10]
-    test2 = schedule[12]
-    # test2.start = test1.start
-    # test2.end = test2.start + test2.duration
-    # test1.start = test2.end
-    # test1.end = test1.start + test1.duration
-    test2.task_on_machine_idx = 1
-    test1.task_on_machine_idx = 2
-    test1.pred = get_predecessor(schedule = schedule, task_id = test1.task_id, task_on_machine_idx = test1.task_on_machine_idx, machine_id = test1.machine_id, job_id = test1.job_id)
-    test2.pred = get_predecessor(schedule=schedule, task_id=test2.task_id, task_on_machine_idx=test2.task_on_machine_idx, machine_id=test2.machine_id, job_id=test2.job_id)
-
-    #for i in list(schedule.keys()):
-    #    schedule[i].pred = get_predecessor(schedule=schedule, task_id=schedule[i].task_id, task_on_machine_idx=schedule[i].task_on_machine_idx, machine_id=schedule[i].machine_id, job_id=schedule[i].job_id)
-
-
-    def get_earliest_start(schedule):
-        for i in list(schedule.keys()):
-            pred_start_times = [schedule[x].end for x in schedule[i].pred]
-            pred_start_times.append(0)
-            schedule[i].start = max(pred_start_times)
-            schedule[i].end = schedule[i].start + schedule[i].duration
-
-    get_earliest_start(schedule)
+    neighbor_solution = get_neighbor_solution(schedule, critical_path)
 
 
     schedule_list = get_schedule_list(schedule)
