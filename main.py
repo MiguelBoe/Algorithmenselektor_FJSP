@@ -54,7 +54,7 @@ elif solver == "meta":
 
 
 
-    schedule_list = get_schedule_list(neighborhood2[0].schedule)
+    schedule_list = get_schedule_list(neighborhood2[2].schedule)
 
 # Visualization
 fig = ff.create_gantt(schedule_list, index_col="Resource", show_colorbar=True, group_tasks=True)
