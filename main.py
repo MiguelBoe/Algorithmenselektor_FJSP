@@ -16,8 +16,10 @@ from scheduling_giffler_thompson import giffler_thompson
 import plotly.figure_factory as ff
 from critical_path import get_critical_path
 from scheduling_giffler_thompson import get_predecessor
-from neighborhood import *
+from neighborhood_old import *
 import time
+import copy
+from neighborHood import NeighborHood
 
 # Config
 solver = "meta"  # google, meta
@@ -45,11 +47,14 @@ elif solver == "meta":
     critical_path = get_critical_path(schedule)
     print((time.time() - start_time))
 
+    neighborhood = NeighborHood(init_solution = schedule, critical_path = critical_path).get_neighborhood()
+    schedule2 = neighborhood[0].schedule
+    critical_path2 = get_critical_path(schedule2)
+    neighborhood2 = NeighborHood(init_solution=schedule2, critical_path=critical_path2).get_neighborhood()
 
-    neighbor_solution = get_neighbor_solution(schedule, critical_path)
 
 
-    schedule_list = get_schedule_list(schedule)
+    schedule_list = get_schedule_list(neighborhood2[0].schedule)
 
 # Visualization
 fig = ff.create_gantt(schedule_list, index_col="Resource", show_colorbar=True, group_tasks=True)

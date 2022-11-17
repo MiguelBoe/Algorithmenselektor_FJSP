@@ -42,7 +42,7 @@ def get_critical_path(schedule):
             if schedule[i].start == schedule[k].end:
                 adj[i].append([k,schedule[i].duration])
 
-    end_node = V-1
+    end_node = max(schedule, key=lambda key: schedule[key].end)
     makespan = schedule[end_node].end
     longestPath(end_node, V, Stack, visited, adj, schedule)
 
