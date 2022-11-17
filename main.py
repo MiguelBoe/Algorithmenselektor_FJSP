@@ -51,10 +51,14 @@ elif solver == "meta":
     schedule2 = neighborhood[0].schedule
     critical_path2 = get_critical_path(schedule2)
     neighborhood2 = NeighborHood(init_solution=schedule2, critical_path=critical_path2).get_neighborhood()
+    schedule3 = neighborhood2[0].schedule
+    critical_path3 = get_critical_path(schedule3)
+    neighborhood3 = NeighborHood(init_solution=schedule3, critical_path=critical_path3).get_neighborhood()
+    schedule4 = neighborhood3[2].schedule
+    critical_path4 = get_critical_path(schedule4)
+    neighborhood4 = NeighborHood(init_solution=schedule4, critical_path=critical_path4).get_neighborhood()
 
-
-
-    schedule_list = get_schedule_list(neighborhood2[2].schedule)
+    schedule_list = get_schedule_list(neighborhood4[0].schedule)
 
 # Visualization
 fig = ff.create_gantt(schedule_list, index_col="Resource", show_colorbar=True, group_tasks=True)
