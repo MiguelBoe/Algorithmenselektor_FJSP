@@ -16,7 +16,6 @@ from scheduling_giffler_thompson import giffler_thompson
 import plotly.figure_factory as ff
 from critical_path import get_critical_path
 from scheduling_giffler_thompson import get_predecessor
-from neighborhood_old import *
 import time
 import copy
 from neighborHood import NeighborHood
