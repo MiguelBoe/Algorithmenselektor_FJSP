@@ -14,20 +14,24 @@ from utils import *
 from scheduling_ortools import *
 from scheduling_giffler_thompson import giffler_thompson
 import plotly.figure_factory as ff
-from critical_path import get_critical_path
 from scheduling_giffler_thompson import get_predecessor
+from tabuSearch import TabuSearch
 import time
 import copy
-from neighborHood import NeighborHood
+
 
 # Config
-solver = "meta"  # google, meta
 max_job_count = 10
 max_machine_count = 10
 max_duration = 10
+instances_count = 10
+solver = "meta"  # google, meta
+max_iter = 4
+tabu_list_length = 10
+
 
 # Job Generator
-data = job_generator(max_job_count, max_machine_count, max_duration)
+data = job_generator(max_job_count, max_machine_count, max_duration, instances_count)
 data = [  # task = (machine_id, processing_time).
     [(0, 5), (1, 3), (2, 3), (3, 2)],  # Job0
     [(1, 4), (0, 7), (2, 8), (3, 6)],  # Job1
@@ -40,24 +44,10 @@ if solver == "google":
     assigned_jobs, all_machines = ortools_scheduler(data[0].list_of_jobs)
     schedule_list = visualize_schedule(assigned_jobs=assigned_jobs, all_machines=all_machines, plan_date=0)
 elif solver == "meta":
-    start_time = time.time()
     data = JobList(data)
     schedule = giffler_thompson(data)
-    critical_path = get_critical_path(schedule)
-    print((time.time() - start_time))
-
-    neighborhood = NeighborHood(init_solution = schedule, critical_path = critical_path).get_neighborhood()
-    schedule2 = neighborhood[0].schedule
-    critical_path2 = get_critical_path(schedule2)
-    neighborhood2 = NeighborHood(init_solution=schedule2, critical_path=critical_path2).get_neighborhood()
-    schedule3 = neighborhood2[0].schedule
-    critical_path3 = get_critical_path(schedule3)
-    neighborhood3 = NeighborHood(init_solution=schedule3, critical_path=critical_path3).get_neighborhood()
-    schedule4 = neighborhood3[2].schedule
-    critical_path4 = get_critical_path(schedule4)
-    neighborhood4 = NeighborHood(init_solution=schedule4, critical_path=critical_path4).get_neighborhood()
-
-    schedule_list = get_schedule_list(neighborhood4[0].schedule)
+    best_solution = TabuSearch(current_solution=schedule, max_iter=max_iter, tabu_list_length=tabu_list_length).solve()
+    schedule_list = get_schedule_list(best_solution)
 
 # Visualization
 fig = ff.create_gantt(schedule_list, index_col="Resource", show_colorbar=True, group_tasks=True)

@@ -3,11 +3,11 @@ import pickle
 from jobList import JobList
 
 
-def job_generator(max_job_count, max_machine_count, max_duration):
+def job_generator(max_job_count, max_machine_count, max_duration, instances_count):
 
     data = []
 
-    for _ in range(10):
+    for _ in range(instances_count):
 
         # Anzahl der Jobs
         num_jobs = random.randint(2, max_job_count)
