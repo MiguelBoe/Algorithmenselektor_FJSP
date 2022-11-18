@@ -10,29 +10,30 @@ class neighborhood_solution:
     arc: Dict = field(default_factory=lambda: {})
 
 class NeighborHood:
-    def __init__(self, init_solution, critical_path):
+    def __init__(self, init_solution, critical_path, tabu_list):
         self.init_solution = copy.deepcopy(init_solution)
         self.current_solution = {}
         self.neighborhood = {}
+        self.tabu_list = tabu_list
         self.critical_path = critical_path
         self.disjunctive_arcs = self.get_disjunctive_arcs()
 
     def get_disjunctive_arcs(self):
         critical_operations = self.critical_path.copy()
         keys = list(critical_operations.keys())
-        disjunctive_arcs = {}
+        disjunctive_arcs, test_arc = {}, {}
         key = 0
 
         for i in keys:
             for j in keys:
                 if critical_operations[i].machine_id == critical_operations[j].machine_id and \
-                        ((critical_operations[i].task_on_machine_idx == critical_operations[
-                            j].task_on_machine_idx - 1) or \
-                         (critical_operations[i].task_on_machine_idx == critical_operations[
-                             j].task_on_machine_idx + 1)):
-                    disjunctive_arcs.update({key: {'i': i, 'j': j}})
+                        ((critical_operations[i].task_on_machine_idx == critical_operations[j].task_on_machine_idx - 1) or \
+                         (critical_operations[i].task_on_machine_idx == critical_operations[j].task_on_machine_idx + 1)):
+                    disjunctive_arcs.update({key: {'i': i, 'j': j}}), test_arc.update({key:set([i,j])})
                     key += 1
             keys.remove(i)
+
+        #test = list(set(test_arc) - set(self.tabu_list))
         return disjunctive_arcs
 
     def get_neighborhood(self):

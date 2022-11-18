@@ -27,7 +27,7 @@ max_duration = 10
 instances_count = 10
 solver = "meta"  # google, meta
 max_iter = 4
-tabu_list_length = 10
+tabu_list_length = 3
 
 
 # Job Generator

@@ -99,7 +99,7 @@ def giffler_thompson(jobs_data: JobList) -> list[ScheduledTask]:
 
         i+=1
 
-    print(f'\nSolution found with a makespan of {end}')
+    print(f'\nInitial solution found with a makespan of {end}')
 
     return schedule
 
