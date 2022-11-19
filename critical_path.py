@@ -4,7 +4,7 @@ def topologicalSortUtil(v, Stack, visited, adj):
 
     for i in adj[v]:
         if (not visited[i[0]]):
-            topologicalSortUtil(i[0])
+            topologicalSortUtil(i[0], Stack, visited, adj)
 
     Stack.append(v)
 

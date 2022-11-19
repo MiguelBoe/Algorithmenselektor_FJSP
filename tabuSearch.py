@@ -16,9 +16,11 @@ class TabuSearch:
     def solve(self):
         for i in range(self.max_iter):
             neighborhood = NeighborHood(init_solution = self.current_solution, critical_path = get_critical_path(self.current_solution), tabu_list = self.tabu_list).get_neighborhood()
-            tabu_arc = neighborhood[min(neighborhood, key=lambda key: neighborhood[key].makespan)].arc
-            self.current_solution = neighborhood[min(neighborhood, key=lambda key: neighborhood[key].makespan)].schedule
-            self.best_solutions.update({i:neighborhood[min(neighborhood, key=lambda key: neighborhood[key].makespan)]})
-            self.tabu_list.append([tabu_arc[0], tabu_arc[1]])
-            self.tabu_list = self.tabu_list[-self.tabu_list_length:]
+            if neighborhood:
+                tabu_arc = neighborhood[min(neighborhood, key=lambda key: neighborhood[key].makespan)].arc
+                self.current_solution = neighborhood[min(neighborhood, key=lambda key: neighborhood[key].makespan)].schedule
+                self.best_solutions.update({i:neighborhood[min(neighborhood, key=lambda key: neighborhood[key].makespan)]})
+                self.tabu_list.append([tabu_arc[0], tabu_arc[1]])
+                self.tabu_list = self.tabu_list[-self.tabu_list_length:]
+            else: break
         return self.best_solutions[min(self.best_solutions, key=lambda key: self.best_solutions[key].makespan)]
