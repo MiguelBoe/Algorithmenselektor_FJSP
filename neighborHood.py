@@ -4,7 +4,7 @@ from scheduling_giffler_thompson import get_predecessor
 from typing import Dict
 
 @dataclass
-class neighborhood_solution:
+class NeighborhoodSolution:
     schedule: Dict = field(default_factory=lambda: {})
     makespan: int = field(default=0)
     arc: Dict = field(default_factory=lambda: {})
@@ -71,5 +71,5 @@ class NeighborHood:
             self.current_solution[i].end = self.current_solution[i].start + self.current_solution[i].duration
 
     def create_neighborhood(self, arc):
-        neighbor = neighborhood_solution(schedule = self.current_solution, makespan = self.current_solution[max(self.current_solution, key=lambda key: self.current_solution[key].end)].end, arc = self.disjunctive_arcs[arc])
+        neighbor = NeighborhoodSolution(schedule = self.current_solution, makespan = self.current_solution[max(self.current_solution, key=lambda key: self.current_solution[key].end)].end, arc = self.disjunctive_arcs[arc])
         self.neighborhood.update({arc: neighbor})
