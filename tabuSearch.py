@@ -1,5 +1,5 @@
 import copy
-from neighborHood import NeighborHood
+from neighborHood import NeighborHood, NeighborhoodSolution
 import plotly.figure_factory as ff
 from utils import get_schedule_list
 from critical_path import get_critical_path
@@ -7,7 +7,7 @@ from critical_path import get_critical_path
 class TabuSearch:
     def __init__(self, current_solution, max_iter, tabu_list_length):
         self.current_solution = copy.deepcopy(current_solution)
-        self.best_solutions = {}
+        self.best_solutions = {0:NeighborhoodSolution(schedule=current_solution, makespan=current_solution[max(current_solution, key=lambda key: current_solution[key].end)].end, arc=[])}
         self.critical_path = get_critical_path(self.current_solution)
         self.tabu_list_length = tabu_list_length
         self.max_iter = max_iter
@@ -19,7 +19,7 @@ class TabuSearch:
             if neighborhood:
                 tabu_arc = neighborhood[min(neighborhood, key=lambda key: neighborhood[key].makespan)].arc
                 self.current_solution = neighborhood[min(neighborhood, key=lambda key: neighborhood[key].makespan)].schedule
-                self.best_solutions.update({i:neighborhood[min(neighborhood, key=lambda key: neighborhood[key].makespan)]})
+                self.best_solutions.update({i+1:neighborhood[min(neighborhood, key=lambda key: neighborhood[key].makespan)]})
                 self.tabu_list.append([tabu_arc[0], tabu_arc[1]])
                 self.tabu_list = self.tabu_list[-self.tabu_list_length:]
             else: break

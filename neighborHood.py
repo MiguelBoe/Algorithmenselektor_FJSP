@@ -48,7 +48,10 @@ class NeighborHood:
     def swap(self, arc):
         i, j = self.disjunctive_arcs[arc][0], self.disjunctive_arcs[arc][1]
         self.current_solution[i].task_on_machine_idx, self.current_solution[j].task_on_machine_idx = self.current_solution[j].task_on_machine_idx, self.current_solution[i].task_on_machine_idx
-        self.current_solution[i], self.current_solution[j] = self.current_solution[j], self.current_solution[i]
+        new_order = list(self.current_solution.keys())
+        a, b = new_order.index(i), new_order.index(j)
+        new_order[b], new_order[a] = new_order[a], new_order[b]
+        self.current_solution = {k: self.current_solution[k] for k in new_order}
 
         current_arc = [i, j]
         for operation in list(self.current_solution.keys()):
