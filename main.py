@@ -26,8 +26,8 @@ max_machine_count = 10
 max_duration = 10
 instances_count = 10
 solver = "meta"  # google, meta
-max_iter = 4
-tabu_list_length = 3
+max_iter = 8
+tabu_list_length = 5
 
 
 # Job Generator
@@ -47,11 +47,9 @@ elif solver == "meta":
     data = JobList(data)
     schedule = giffler_thompson(data)
     best_solution = TabuSearch(current_solution=schedule, max_iter=max_iter, tabu_list_length=tabu_list_length).solve()
-    schedule_list = get_schedule_list(best_solution)
+    schedule_list = get_schedule_list(best_solution.schedule)
 
 # Visualization
 fig = ff.create_gantt(schedule_list, index_col="Resource", show_colorbar=True, group_tasks=True)
 fig.layout.xaxis.type = "linear"
 fig.show()
-
-print()

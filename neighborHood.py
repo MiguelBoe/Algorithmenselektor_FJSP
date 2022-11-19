@@ -21,23 +21,24 @@ class NeighborHood:
     def get_disjunctive_arcs(self):
         critical_operations = self.critical_path.copy()
         keys = list(critical_operations.keys())
-        disjunctive_arcs, test_arc = {}, {}
-        key = 0
+        disjunctive_arcs = []
 
         for i in keys:
             for j in keys:
                 if critical_operations[i].machine_id == critical_operations[j].machine_id and \
                         ((critical_operations[i].task_on_machine_idx == critical_operations[j].task_on_machine_idx - 1) or \
                          (critical_operations[i].task_on_machine_idx == critical_operations[j].task_on_machine_idx + 1)):
-                    disjunctive_arcs.update({key: {'i': i, 'j': j}}), test_arc.update({key:set([i,j])})
-                    key += 1
+                    disjunctive_arcs.append([i, j])
             keys.remove(i)
 
-        #test = list(set(test_arc) - set(self.tabu_list))
+        current_tabu_list = self.tabu_list
+        for list_entry in range(len(current_tabu_list)): current_tabu_list.append([current_tabu_list[list_entry][1], current_tabu_list[list_entry][0]])
+        disjunctive_arcs = list(set(tuple(x) for x in disjunctive_arcs) - set(tuple(x) for x in current_tabu_list))
+
         return disjunctive_arcs
 
     def get_neighborhood(self):
-        for arc in list(self.disjunctive_arcs.keys()):
+        for arc in range(len(self.disjunctive_arcs)):
             self.current_solution = copy.deepcopy(self.init_solution)
             self.swap(arc)
             self.get_earliest_start()
@@ -45,7 +46,7 @@ class NeighborHood:
         return self.neighborhood
 
     def swap(self, arc):
-        i, j = self.disjunctive_arcs[arc]['i'], self.disjunctive_arcs[arc]['j']
+        i, j = self.disjunctive_arcs[arc][0], self.disjunctive_arcs[arc][1]
         self.current_solution[i].task_on_machine_idx, self.current_solution[j].task_on_machine_idx = self.current_solution[j].task_on_machine_idx, self.current_solution[i].task_on_machine_idx
         self.current_solution[i], self.current_solution[j] = self.current_solution[j], self.current_solution[i]
 
