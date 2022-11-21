@@ -25,9 +25,10 @@ max_job_count = 10
 max_machine_count = 10
 max_duration = 10
 instances_count = 10
-solver = "google"  # google, meta
+solver = "meta"  # google, meta
 max_iter = 50
 tabu_list_length = 5
+time_limit_in_seconds = 1
 
 
 # Job Generator
@@ -41,12 +42,12 @@ data = [  # task = (machine_id, processing_time).
 
 # Selection of the solver
 if solver == "google":
-    assigned_jobs, all_machines = ortools_scheduler(data=data)
+    assigned_jobs, all_machines = ortools_scheduler(data=data, time_limit_in_seconds=time_limit_in_seconds)
     schedule_list = visualize_schedule(assigned_jobs=assigned_jobs, all_machines=all_machines, plan_date=0)
 elif solver == "meta":
     data = JobList(data)
     init_schedule = giffler_thompson(data)
-    best_solution = TabuSearch(current_solution=init_schedule, max_iter=max_iter, tabu_list_length=tabu_list_length).solve()
+    best_solution = TabuSearch(current_solution=init_schedule, max_iter=max_iter, tabu_list_length=tabu_list_length, time_limit_in_seconds=time_limit_in_seconds).solve()
     schedule_list = get_schedule_list(best_solution.schedule)
     print(f'\nBest solution with TabuSearch found with a makespan of {best_solution.makespan}')
 

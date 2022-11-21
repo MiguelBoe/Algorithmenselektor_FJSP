@@ -1,7 +1,7 @@
 import collections
 from ortools.sat.python import cp_model
 
-def ortools_scheduler(data):
+def ortools_scheduler(data, time_limit_in_seconds):
 
     all_machines = list(set(list(task[0] for job in data for task in job)))
     machines_count = len(all_machines)
@@ -57,7 +57,7 @@ def ortools_scheduler(data):
     solver = cp_model.CpSolver()
 
     # Sets a time limit of 10 seconds.
-    solver.parameters.max_time_in_seconds = 10
+    solver.parameters.max_time_in_seconds = time_limit_in_seconds
 
     status = solver.Solve(model)
 
