@@ -59,6 +59,6 @@ elif solver == "meta":
     print(f'\nBest solution with TabuSearch found with a makespan of {best_solution.makespan}')
 
 # Visualization
-# fig = ff.create_gantt(schedule_list, index_col="Resource", show_colorbar=True, group_tasks=True)
-# fig.layout.xaxis.type = "linear"
-# fig.show()
+fig = ff.create_gantt(schedule_list, index_col="Resource", show_colorbar=True, group_tasks=True)
+fig.layout.xaxis.type = "linear"
+fig.show()
