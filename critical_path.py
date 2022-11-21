@@ -1,29 +1,17 @@
-def topologicalSortUtil(v, Stack, visited, adj):
-
-    visited[v] = True
-
-    for i in adj[v]:
-        if (not visited[i[0]]):
-            topologicalSortUtil(i[0], Stack, visited, adj)
-
-    Stack.append(v)
+from utils import topologicalSortUtil
 
 
 def longestPath(end_node, V, Stack, visited, adj, schedule):
 
     dist = [-10 ** 9 for i in range(V)]
-
     for v in range(V):
         if (visited[v] == False):
             topologicalSortUtil(v, Stack, visited, adj)
-
     dist[end_node] = 0
 
     while (len(Stack) > 0):
-
         u = Stack[-1]
         del Stack[-1]
-
         if (dist[u] != 10 ** 9):
             for i in adj[u]:
                 if (dist[i[0]] < dist[u] + i[1]):

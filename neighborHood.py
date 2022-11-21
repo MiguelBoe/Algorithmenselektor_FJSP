@@ -2,6 +2,7 @@ import copy
 from dataclasses import dataclass, field
 from scheduling_giffler_thompson import get_predecessor
 from typing import Dict
+from utils import topological_sort_earliest_start
 
 @dataclass
 class NeighborhoodSolution:
@@ -67,7 +68,8 @@ class NeighborHood:
                                                         job_id=self.current_solution[i].job_id)
 
     def get_earliest_start(self):
-        for i in list(self.current_solution.keys()):
+        new_topological_order = topological_sort_earliest_start(self.current_solution)
+        for i in new_topological_order:
             pred_start_times = [self.current_solution[x].end for x in self.current_solution[i].pred]
             pred_start_times.append(0)
             self.current_solution[i].start = max(pred_start_times)
