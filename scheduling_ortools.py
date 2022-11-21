@@ -62,7 +62,7 @@ def ortools_scheduler(data, time_limit_in_seconds):
     status = solver.Solve(model)
 
     if status == cp_model.OPTIMAL or status == cp_model.FEASIBLE:
-        print('Solution:')
+        # print('Solution:')
         # Create one list of assigned tasks per machine.
         assigned_jobs = collections.defaultdict(list)
         for job_id, job in enumerate(data):
@@ -101,7 +101,7 @@ def ortools_scheduler(data, time_limit_in_seconds):
             output += sol_line
 
         # Finally print the solution found.
-        print(f'Best solution with Google CP_Solver found with a makespan of {solver.ObjectiveValue()}')
+        print(f'\nBest solution with Google CP_Solver found with a makespan of {solver.ObjectiveValue()}')
         # print(output)
     else:
         print('No solution found.')
