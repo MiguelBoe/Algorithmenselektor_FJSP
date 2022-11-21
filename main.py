@@ -19,16 +19,22 @@ from tabuSearch import TabuSearch
 import time
 import copy
 
-
-# Config
+# Konfigurationsbereich
+#----------------------------------------------------------------------------------------------------------------------#
+# Config for job_generator
 max_job_count = 10
 max_machine_count = 10
 max_duration = 10
 instances_count = 10
+
+# Select solver and set time_limit
 solver = "meta"  # google, meta
+time_limit_in_seconds = 1
+
+# Config for TabuSearch
 max_iter = 50
 tabu_list_length = 5
-time_limit_in_seconds = 1
+#----------------------------------------------------------------------------------------------------------------------#
 
 
 # Job Generator
