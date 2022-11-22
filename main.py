@@ -32,12 +32,12 @@ max_iter = 300
 tabu_list_length = 10
 
 # Data path
-data_path = '/Users/deboettm/PycharmProjects/Algorithmenselektor_JSP/data'
+data_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\data'
 #----------------------------------------------------------------------------------------------------------------------#
 
 
 # Load data
-with open(f'{data_path}/data.pkl', 'rb') as in_file:
+with open(f'{data_path}\\data.pkl', 'rb') as in_file:
     data = pickle.load(in_file)
 
 # data = [  # task = (machine_id, processing_time).

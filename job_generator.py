@@ -9,7 +9,7 @@ max_job_count = 100
 max_machine_count = 20
 max_duration = 10
 instances_count = 10
-data_path = '/Users/deboettm/PycharmProjects/Algorithmenselektor_JSP/data'
+data_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\data'
 #----------------------------------------------------------------------------------------------------------------------#
 
 # Create directory if it doesn't exist
@@ -31,7 +31,7 @@ def job_generator(max_job_count, max_machine_count, max_duration, instances_coun
         data.append(jobs_data)
 
     # Safe data
-    with open(f'{data_path}/data.pkl', 'wb') as out_file:
+    with open(f'{data_path}\\data.pkl', 'wb') as out_file:
         pickle.dump(data, out_file)
 
     print('\nJobs created!')
