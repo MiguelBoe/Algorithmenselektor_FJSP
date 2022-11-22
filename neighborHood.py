@@ -1,8 +1,7 @@
-import copy
 from dataclasses import dataclass, field
 from scheduling_giffler_thompson import get_predecessor
 from typing import Dict
-from utils import topological_sort_earliest_start
+from utils import topological_sort_earliest_start, current_solution_create_copy
 
 @dataclass
 class NeighborhoodSolution:
@@ -12,7 +11,7 @@ class NeighborhoodSolution:
 
 class NeighborHood:
     def __init__(self, init_solution, critical_path, tabu_list):
-        self.init_solution = copy.deepcopy(init_solution)
+        self.init_solution = init_solution
         self.current_solution = {}
         self.neighborhood = {}
         self.tabu_list = tabu_list
@@ -32,7 +31,7 @@ class NeighborHood:
                     disjunctive_arcs.append([i, j])
             keys.remove(i)
 
-        current_tabu_list = self.tabu_list
+        current_tabu_list = self.tabu_list.copy()
         for list_entry in range(len(current_tabu_list)): current_tabu_list.append([current_tabu_list[list_entry][1], current_tabu_list[list_entry][0]])
         disjunctive_arcs = list(set(tuple(x) for x in disjunctive_arcs) - set(tuple(x) for x in current_tabu_list))
 
@@ -40,7 +39,7 @@ class NeighborHood:
 
     def get_neighborhood(self):
         for arc in range(len(self.disjunctive_arcs)):
-            self.current_solution = copy.deepcopy(self.init_solution)
+            self.current_solution = current_solution_create_copy(self.init_solution)
             self.swap(arc)
             self.get_earliest_start()
             self.create_neighborhood(arc)

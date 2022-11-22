@@ -16,28 +16,28 @@ from scheduling_giffler_thompson import giffler_thompson
 import plotly.figure_factory as ff
 from scheduling_giffler_thompson import get_predecessor
 from tabuSearch import TabuSearch
+from jobList import JobList
 import pickle
 import time
-import copy
 
 
 # Konfigurationsbereich
 #----------------------------------------------------------------------------------------------------------------------#
 # Select solver and set time_limit
 solver = 'meta'  # google, meta
-time_limit_in_seconds = 1
+time_limit_in_seconds = 5
 
 # Config for TabuSearch
-max_iter = 100
-tabu_list_length = 1
+max_iter = 300
+tabu_list_length = 10
 
 # Data path
-data_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\data'
+data_path = '/Users/deboettm/PycharmProjects/Algorithmenselektor_JSP/data'
 #----------------------------------------------------------------------------------------------------------------------#
 
 
 # Load data
-with open(f'{data_path}\\data.pkl', 'rb') as in_file:
+with open(f'{data_path}/data.pkl', 'rb') as in_file:
     data = pickle.load(in_file)
 
 # data = [  # task = (machine_id, processing_time).

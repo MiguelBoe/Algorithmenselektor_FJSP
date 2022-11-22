@@ -1,3 +1,5 @@
+from scheduling_giffler_thompson import ScheduledTask
+
 def visualize_schedule(assigned_jobs, all_machines, plan_date):
     schedule_list = []
     for machine in all_machines:
@@ -37,3 +39,20 @@ def topological_sort_earliest_start(current_solution):
             topologicalSortUtil(v, Stack, visited, adj)
 
     return Stack
+
+def current_solution_create_copy(init_solution):
+    current_solution = {}
+    for i in init_solution.keys():
+        scheduled_task = ScheduledTask(
+            machine_id=init_solution[i].machine_id,
+            job_id=init_solution[i].job_id,
+            duration=init_solution[i].duration,
+            task_id=init_solution[i].task_id,
+            start=init_solution[i].start,
+            end=init_solution[i].end,
+            task_on_machine_idx=init_solution[i].task_on_machine_idx,
+            pred=init_solution[i].pred
+        )
+        current_solution.update({i: scheduled_task})
+
+    return current_solution

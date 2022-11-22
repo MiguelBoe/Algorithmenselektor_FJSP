@@ -1,4 +1,3 @@
-import copy
 from neighborHood import NeighborHood, NeighborhoodSolution
 import plotly.figure_factory as ff
 from utils import get_schedule_list
@@ -7,7 +6,7 @@ import time
 
 class TabuSearch:
     def __init__(self, current_solution, max_iter, tabu_list_length, time_limit_in_seconds):
-        self.current_solution = copy.deepcopy(current_solution)
+        self.current_solution = current_solution
         self.best_solutions = {0:NeighborhoodSolution(schedule=current_solution, makespan=current_solution[max(current_solution, key=lambda key: current_solution[key].end)].end, arc=[])}
         self.critical_path = get_critical_path(self.current_solution)
         self.tabu_list_length = tabu_list_length
