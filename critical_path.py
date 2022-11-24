@@ -1,69 +1,41 @@
-from jobList import JobList
-from scheduling_giffler_thompson import ScheduledTask, giffler_thompson
+from utils import topologicalSortUtil
 
 
-def main():
-    #### Daten zum Testen aus Ablaufplanung (F. Jaehn, E. Pesch)
-    jobs_data = [
-        [(0, 5), (1, 3), (2, 3), (3, 2)],
-        [(1, 4), (0, 7), (2, 8), (3, 6)],
-        [(3, 3), (2, 5), (1, 6), (0, 1)],
-        [(2, 4), (3, 7), (1, 1), (0, 2)],
-    ]
+def longestPath(end_node, V, Stack, visited, adj, schedule):
 
-    jobs_data = JobList(jobs_data)
+    # Als erstes werden die Vorgänge in eine topologische Reihenfolge gebracht.
+    dist = [-10 ** 9 for i in range(V)]
+    for v in range(V):
+        if (visited[v] == False):
+            topologicalSortUtil(v, Stack, visited, adj)
+    dist[end_node] = 0
 
-    schedule, schedule_list = giffler_thompson(jobs_data)
+    # Nach dieser gefundenen Reihenfolge werden längsten Wege vom Ausgangsknoten aus bestimmt. Alle Knoten, welche nicht zum Endknoten führen, werden mit einem hohen negativen Wert bestraft, damit sie in keinem Fall Gleichung zur Identifizierung einer kritischen Operation erfüllen.
+    while (len(Stack) > 0):
+        u = Stack[-1]
+        del Stack[-1]
+        if (dist[u] != 10 ** 9):
+            for i in adj[u]:
+                if (dist[i[0]] < dist[u] + i[1]):
+                    dist[i[0]] = dist[u] + i[1]
 
-    get_saz_sez(schedule)
+    for i in range(V):
+        schedule[i].longest_path = dist[i]
 
-    critical_path = get_critical_path(schedule)
-
-    print(critical_path)
-
-
+# Zunächst werden die Operationen in einer Adjazenzliste abgespeichert, um die Vorangsbeziehungen abzuspeichern.
 def get_critical_path(schedule):
-    return [task for task in schedule if task.start == task.saz]
+    V, Stack, visited = len(schedule), [], [False for i in range(len(schedule))]
+    adj = [[] for i in range(V)]
 
-def get_saz_sez(schedule: list[ScheduledTask]):
-    schedule[-1].saz = schedule[-1].start
-    schedule[-1].sez = schedule[-1].end
+    for i in list(schedule.keys()):
+        for k in schedule[i].pred:
+            if schedule[i].start == schedule[k].end:
+                adj[i].append([k,schedule[i].duration])
 
-    # Frühester Anfangs und Endzeitpunkt
-    for task in reversed(schedule[:-1]):
-        # finde Nachfolgertasks nachfolger im job und nachfolger auf maschine
-        successor_job = None
-        successor_machine = None
+    # Als nächstes wird der Endknoten bestimmt, sowie der makespan. Danach wird die Tailzeit für jeden Vorgang mit der Funktion longestPath berechnet.
+    end_node = max(schedule, key=lambda key: schedule[key].end)
+    makespan = schedule[end_node].end
+    longestPath(end_node, V, Stack, visited, adj, schedule)
 
-        for task2 in reversed(schedule):
-            if task2.machine_id == task.machine_id and task2.task_on_machine_idx == (
-                task.task_on_machine_idx + 1
-            ):
-                successor_machine = task2
-            if task2.job_id == task.job_id and task2.task_id == (task.task_id + 1):
-                successor_job = task2
-
-        if successor_job is None and successor_machine is None:
-            task.sez = schedule[-1].sez
-
-        elif successor_job is None:
-            successor_machine_saz = successor_machine.saz
-
-            task.sez = successor_machine_saz
-
-        elif successor_machine is None:
-            successor_job_saz = successor_job.saz
-
-            task.sez = successor_job_saz
-
-        else:
-            successor_machine_saz = successor_machine.saz
-            successor_job_saz = successor_job.saz
-
-            task.sez = min(successor_machine_saz, successor_job_saz)
-
-        task.saz = task.sez - task.duration
-
-
-if __name__ == "__main__":
-    main()
+    # Es werden nur kritische Operationen zurückgegeben. Dies sind diejenigen Operationen, welche die untenstehende Gleichung erfüllen.
+    return {k:v for k, v in schedule.items() if v.start + v.duration + v.longest_path == makespan}

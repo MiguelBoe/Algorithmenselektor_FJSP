@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
-from typing import Tuple
+from typing import Tuple, List
 from jobList import JobList
+import numpy as np
 
 @dataclass
 class Task:
@@ -12,11 +13,11 @@ class Task:
 
 @dataclass
 class ScheduledTask(Task):
-    start: int
-    end: int
-    task_on_machine_idx: int
-    saz: int = field(init=False, default=0)
-    sez: int = field(init=False, default=0)
+    start: int = field(default=0)
+    end: int = field(default=0)
+    task_on_machine_idx: int = field(default=0)
+    longest_path: int = field(init=False, default=0)
+    pred: List = field(default_factory=lambda: [])
 
 
 def giffler_thompson(jobs_data: JobList) -> list[ScheduledTask]:
@@ -24,7 +25,7 @@ def giffler_thompson(jobs_data: JobList) -> list[ScheduledTask]:
     Berechnung eines Schedules mittels des Giffler und Thompson Algorithmus
     """
 
-    schedule = []
+    schedule = {}
 
     schedule_list = []
 
@@ -45,7 +46,7 @@ def giffler_thompson(jobs_data: JobList) -> list[ScheduledTask]:
     num_tasks_per_machine = [0] * num_machines
 
     # Solange irgendein Eintrag der Liste job_length ungleich des Eintrags an der gleichen Stelle in accessable_tasks_idx ist, sind noch nicht alle Tasks eingeplant
-
+    i=0
     while any(job_len != acc_idx for job_len, acc_idx in zip(job_length, accessable_tasks_idx)):
 
         # Initialisieren der Liste der zuweisbaren Tasks
@@ -78,21 +79,11 @@ def giffler_thompson(jobs_data: JobList) -> list[ScheduledTask]:
             start=start,
             end=end,
             task_on_machine_idx=num_tasks_per_machine[selected_task.machine_id],
-        )
-
-        # scheduled_task zusätzlich als dict abspeichern
-        schedule_list_entry = dict(
-            Task=scheduled_task.machine_id,
-            Start=scheduled_task.start,
-            Finish=scheduled_task.end,
-            Resource=f"Job_{scheduled_task.job_id}",
-        )
-
-        # Den einzuplanenden Task dem Schedule hinzufügen (dict)
-        schedule_list.append(schedule_list_entry)
+            pred=get_predecessor(schedule=schedule, task_id=selected_task.task_id, task_on_machine_idx=num_tasks_per_machine[selected_task.machine_id], machine_id=selected_task.machine_id, job_id=selected_task.job_id),
+            )
 
         # Den einzuplanenden Task dem Schedule hinzufügen
-        schedule.append(scheduled_task)
+        schedule.update({i:scheduled_task})
 
         # print(f"Scheduled Task: {scheduled_task}")
 
@@ -106,10 +97,11 @@ def giffler_thompson(jobs_data: JobList) -> list[ScheduledTask]:
         # Aktualisierung der zuweisbaren Tasks
         accessable_tasks_idx[selected_task.job_id] += 1
 
+        i+=1
 
-    print(f'\nSolution found with a makespan of {end}')
+    print(f'\nInitial solution found with a makespan of {end}')
 
-    return schedule, schedule_list
+    return schedule
 
 
 def update_access_times(
@@ -120,7 +112,7 @@ def update_access_times(
     machine = selected_task.machine_id
     job = selected_task.job_id
 
-    # Neue Zeit entspricht der Taskdauer + max( Maschinenzugangszeit, Jobzugangszeit)
+    # Neue Zeit entspricht der Taskdauer + max(Maschinenzugangszeit, Jobzugangszeit)
 
     new_accesstime = selected_task.duration + max(access_time_machines[machine], access_time_job[job])
 
@@ -195,6 +187,11 @@ def get_prio_task_SPT(task_on_machine: list[Task], jobs_data: JobList) -> Task:
             job_duration = jobs_duration[task.job_id]
             selected_task = task
     return selected_task
+
+# Mit Hilfe dieser Funktion werden während der Generierung der Startlösung die Vorgänger-Operationen abgespeichert.
+def get_predecessor(schedule,task_id, task_on_machine_idx, machine_id, job_id):
+    return [k for k, v in schedule.items() if (v.job_id == job_id and v.task_id ==task_id-1) or
+            (v.machine_id==machine_id and v.task_on_machine_idx==task_on_machine_idx-1)]
 
 
 #### Daten zum Testen aus Ablaufplanung (F. Jaehn, E. Pesch)
