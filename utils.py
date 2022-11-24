@@ -1,5 +1,6 @@
 from scheduling_giffler_thompson import ScheduledTask
 
+# Diese Funktion dient zur Transformation der Daten (von OR-Tools) für die Visualisierung.
 def visualize_schedule(assigned_jobs, all_machines, plan_date):
     schedule_list = []
     for machine in all_machines:
@@ -13,12 +14,14 @@ def visualize_schedule(assigned_jobs, all_machines, plan_date):
     schedule_list.sort(key = lambda x: x['Task'])
     return schedule_list
 
+# Diese Funktion dient zur Transformation der Daten (von der Metaheuristik) für die Visualisierung.
 def get_schedule_list(schedule):
     schedule_list = []
     for k,v in schedule.items():
         schedule_list.append({'Task':v.machine_id, 'Start':v.start, 'Finish':v.end, 'Resource': f'Job_{v.job_id}'})
     return schedule_list
 
+# Mit dieser Funktion wird die topologische Sortierung der Adjazenzliste vorgenommen.
 def topologicalSortUtil(v, Stack, visited, adj):
     visited[v] = True
     for i in adj[v]:
@@ -26,6 +29,7 @@ def topologicalSortUtil(v, Stack, visited, adj):
             topologicalSortUtil(i[0], Stack, visited, adj)
     Stack.append(v)
 
+# Diese Funktion ist der Funktion zur Berechnung des kritischen Pfades sehr ähnlich. Sie funktioniert allerdings etwas anders und ist nur dafür gedacht, die neue topologische Reihenfolge der Operationen nach einem Move zu ermitteln.
 def topological_sort_earliest_start(current_solution):
     V, Stack, visited = len(current_solution), [], [False for i in range(len(current_solution))]
     adj = [[] for i in range(V)]
@@ -40,6 +44,7 @@ def topological_sort_earliest_start(current_solution):
 
     return Stack
 
+# Diese Funktion dient dabei die aktuelle Lösung bei der Suche nach Nachbarschaftslösungen zu kopieren. Diese Funktion zieht zwar sehr viel Zeit im Algorithmus, ist aber die bisher schnellste gefundene Lösung.
 def current_solution_create_copy(init_solution):
     current_solution = {}
     for i in init_solution.keys():

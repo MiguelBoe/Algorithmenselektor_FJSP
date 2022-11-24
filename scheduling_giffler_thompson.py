@@ -188,7 +188,7 @@ def get_prio_task_SPT(task_on_machine: list[Task], jobs_data: JobList) -> Task:
             selected_task = task
     return selected_task
 
-
+# Mit Hilfe dieser Funktion werden während der Generierung der Startlösung die Vorgänger-Operationen abgespeichert.
 def get_predecessor(schedule,task_id, task_on_machine_idx, machine_id, job_id):
     return [k for k, v in schedule.items() if (v.job_id == job_id and v.task_id ==task_id-1) or
             (v.machine_id==machine_id and v.task_on_machine_idx==task_on_machine_idx-1)]

@@ -6,7 +6,6 @@ class JobList:
     def __init__(self, list_of_jobs: list[list[Tuple[int, int]]]):
 
         self.list_of_jobs = list_of_jobs
-
         self.num_machines = self.get_num_machines()
         self.job_durations = self.get_processing_time()
         self.job_length = self.get_job_length()
@@ -33,11 +32,11 @@ class JobList:
         return num_machines + 1
 
     def get_processing_time(self) -> list:
-        """ Berechnen der Jobdauer für jeden Job der Instanz. """
+        """ Berechnen der Jobdauer für jeden Job der Instanz."""
         return [sum(task[1] for task in job) for job in self.list_of_jobs]
 
     def get_job_length(self) -> list:
-        """ Berechnen der Anzahl der Tasks in einem Job für jeden Job. """
+        """ Berechnen der Anzahl der Tasks in einem Job für jeden Job."""
         return [len(job) for job in self.list_of_jobs]
 
     @classmethod

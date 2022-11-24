@@ -19,9 +19,10 @@ class TabuSearch:
         for i in range(self.max_iter):
             neighborhood = NeighborHood(init_solution = self.current_solution, critical_path = get_critical_path(self.current_solution), tabu_list = self.tabu_list).get_neighborhood()
             if neighborhood and time.time() < timeout:
-                tabu_arc = neighborhood[min(neighborhood, key=lambda key: neighborhood[key].makespan)].arc
-                self.current_solution = neighborhood[min(neighborhood, key=lambda key: neighborhood[key].makespan)].schedule
-                self.best_solutions.update({i+1:neighborhood[min(neighborhood, key=lambda key: neighborhood[key].makespan)]})
+                new_solution = neighborhood[min(neighborhood, key=lambda key: neighborhood[key].makespan)]
+                tabu_arc = new_solution.arc
+                self.current_solution = new_solution.schedule
+                self.best_solutions.update({i+1:new_solution})
                 self.tabu_list.append([tabu_arc[0], tabu_arc[1]])
                 self.tabu_list = self.tabu_list[-self.tabu_list_length:]
             else: break
