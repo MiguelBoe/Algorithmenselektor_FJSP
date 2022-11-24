@@ -58,6 +58,7 @@ def ortools_scheduler(data, time_limit_in_seconds):
 
     # Sets a time limit of 10 seconds.
     solver.parameters.max_time_in_seconds = time_limit_in_seconds
+    solver.parameters.num_search_workers = 1
 
     status = solver.Solve(model)
 
