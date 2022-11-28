@@ -19,6 +19,8 @@ from tabuSearch import TabuSearch
 from jobList import JobList
 import pickle
 import time
+import colorcet as cc
+import seaborn as sns
 
 
 # Konfigurationsbereich
@@ -28,18 +30,18 @@ solver = 'meta'  # google, meta
 time_limit_in_seconds = 10
 
 # Maximierung der Iterationen der TabuSearch.
-max_iter = 300
+max_iter = 10000
 
 # Auswahl der Instanz des generierten Datensatzes.
 instance = 0
 
 # Definition des Pfades, an welchem die Daten abgespeichert sind.
-data_path = '/Users/deboettm/PycharmProjects/Algorithmenselektor_JSP/data'
+data_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\data'
 #----------------------------------------------------------------------------------------------------------------------#
 
 
 # Einlesen der Daten.
-with open(f'{data_path}/data.pkl', 'rb') as in_file:
+with open(f'{data_path}\\data.pkl', 'rb') as in_file:
     data = pickle.load(in_file)
 
 # Kleine Test-Instanz.
@@ -67,6 +69,6 @@ elif solver == "meta":
     print(f'\nBest solution with TabuSearch found with a makespan of {best_solution.makespan}')
 
 # Visualisierng der Planung mit Hilfe von Plotly in einem Gantt-Diagramm.
-fig = ff.create_gantt(schedule_list, index_col="Resource", show_colorbar=True, group_tasks=True)
+fig = ff.create_gantt(schedule_list, index_col="Resource", show_colorbar=True, group_tasks=True, colors=sns.color_palette(cc.glasbey, n_colors=(len(data[instance].list_of_jobs))))
 fig.layout.xaxis.type = "linear"
 fig.show()

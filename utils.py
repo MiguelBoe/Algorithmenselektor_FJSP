@@ -19,6 +19,7 @@ def get_schedule_list(schedule):
     schedule_list = []
     for k,v in schedule.items():
         schedule_list.append({'Task':v.machine_id, 'Start':v.start, 'Finish':v.end, 'Resource': f'Job_{v.job_id}'})
+    schedule_list = sorted(schedule_list, key=lambda x: x['Task'])
     return schedule_list
 
 # Mit dieser Funktion wird die topologische Sortierung der Adjazenzliste vorgenommen.
