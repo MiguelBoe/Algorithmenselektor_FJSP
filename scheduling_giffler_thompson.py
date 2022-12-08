@@ -20,7 +20,7 @@ class ScheduledTask(Task):
     pred: List = field(default_factory=lambda: [])
 
 
-def giffler_thompson(jobs_data: JobList) -> list[ScheduledTask]:
+def giffler_thompson(jobs_data: JobList, priority_rule) -> list[ScheduledTask]:
     """
     Berechnung eines Schedules mittels des Giffler und Thompson Algorithmus
     """
@@ -62,12 +62,15 @@ def giffler_thompson(jobs_data: JobList) -> list[ScheduledTask]:
         # Wenn es mehr als einen zuweisbaren Job auf der ausgewählten Maschine gibt
         if len(task_on_machine) > 1:
             # Auswahl des Tasks, der nach ausgewählter Prio-Regel als erstes dran ist
-            selected_task = get_prio_task_LPT(task_on_machine, jobs_data)
+            if priority_rule == 'LPT':
+                selected_task = get_prio_task_LPT(task_on_machine, jobs_data)
+            elif priority_rule == 'SPT':
+                selected_task = get_prio_task_SPT(task_on_machine, jobs_data)
+            elif priority_rule == 'LRPT' or 'SRPT':
+                selected_task = get_prio_task_RPT(task_on_machine, jobs_data, priority_rule)
 
         # Berechnung des Start- und Endwertes des ausgewählten Tasks
-
         start = max(access_time_machines[selected_task.machine_id], access_time_job[selected_task.job_id])
-
         end = start + selected_task.duration
 
         # Den ausgewählten Task in die dataclass ScheduledTask aufnehmen und um start und end erweitern
@@ -187,6 +190,24 @@ def get_prio_task_SPT(task_on_machine: list[Task], jobs_data: JobList) -> Task:
             job_duration = jobs_duration[task.job_id]
             selected_task = task
     return selected_task
+
+def get_prio_task_RPT(task_on_machine: list[Task], jobs_data: JobList, priority_rule) -> Task:
+    job_ids = [o.job_id for o in task_on_machine]
+    task_ids = [o.task_id for o in task_on_machine]
+
+    remaining_processing_time = {}
+    index=0
+    for x, y in zip(job_ids, task_ids):
+        remaining_processing_time.update({index:sum(task[1] for task in jobs_data.list_of_jobs[x][y:]) for job in job_ids})
+        index += 1
+
+    if priority_rule == 'LRPT':
+        selected_task = task_on_machine[max(remaining_processing_time, key=remaining_processing_time.get)]
+    elif priority_rule == 'SRPT':
+        selected_task = task_on_machine[min(remaining_processing_time, key=remaining_processing_time.get)]
+
+    return selected_task
+
 
 # Mit Hilfe dieser Funktion werden während der Generierung der Startlösung die Vorgänger-Operationen abgespeichert.
 def get_predecessor(schedule,task_id, task_on_machine_idx, machine_id, job_id):

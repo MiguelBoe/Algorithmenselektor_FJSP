@@ -27,13 +27,14 @@ import seaborn as sns
 #----------------------------------------------------------------------------------------------------------------------#
 # Auswahl des Solvers und Definition des Zeitlimits der Planung.
 solver = 'meta'  # google, meta
-time_limit_in_seconds = 10
+time_limit_in_seconds = 5
 
-# Maximierung der Iterationen der TabuSearch.
-max_iter = 10000
+# Konfiguration der Metaheuristik.
+max_iter = 10000 # Maximierung der Iterationen der TabuSearch
+priority_rule = 'LRPT' # LPT, SPT, LRPT, SRPT
 
 # Auswahl der Instanz des generierten Datensatzes.
-instance = 0
+instance = 7
 
 # Definition des Pfades, an welchem die Daten abgespeichert sind.
 data_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\data'
@@ -61,7 +62,7 @@ if solver == "google":
     schedule_list = visualize_schedule(assigned_jobs=assigned_jobs, all_machines=all_machines, plan_date=0)
 elif solver == "meta":
     # Generierung einer Startlösung mit dem Verfahren von Giffler & Thompson.
-    init_schedule = giffler_thompson(data[instance])
+    init_schedule = giffler_thompson(data[instance], priority_rule)
     # Durchführung der TabuSearch mit Hilfe der gefundenen initial Lösung. Ausgabe = Beste gefundene Lösung.
     best_solution = TabuSearch(current_solution=init_schedule, max_iter=max_iter, tabu_list_length=int((len(data[instance].list_of_jobs)+data[instance].num_machines)/2), time_limit_in_seconds=time_limit_in_seconds).solve()
     # Transformation der Daten in das richtige Format für die Visualisierung der Planung mit Hilfe von Plotly in einem Gantt-Diagramm.
