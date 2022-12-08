@@ -55,9 +55,9 @@ elif source == 'taillard':
 #     [(0, 5), (1, 3), (2, 3), (3, 2)],  # Job0
 #     [(1, 4), (0, 7), (2, 8), (3, 6)],  # Job1
 #     [(3, 3), (2, 5), (1, 6), (0, 1)],  # Job2
-#     [(2, 4), (3, 7), (1, 1), (0, 2)],  # Job2
+#     [(2, 4), (3, 7), (1, 1), (0, 2)],  # Job3
 # ]
-# data = JobList(data)
+# data = [JobList(data)]
 
 # Auswahl des Solvers mit entsprechendem Konfigurationsparameter.
 if solver == "google":
