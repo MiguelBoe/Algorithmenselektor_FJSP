@@ -14,8 +14,7 @@ class TabuSearch:
         self.time_limit_in_seconds = time_limit_in_seconds
         self.tabu_list = []
 
-    def solve(self):
-        timeout = time.time() + self.time_limit_in_seconds
+    def solve(self, timeout):
         for i in range(self.max_iter):
             neighborhood = NeighborHood(init_solution = self.current_solution, critical_path = get_critical_path(self.current_solution), tabu_list = self.tabu_list).get_neighborhood()
             if neighborhood and time.time() < timeout:
@@ -28,8 +27,7 @@ class TabuSearch:
             else: break
         return self.best_solutions[min(self.best_solutions, key=lambda key: self.best_solutions[key].makespan)]
 
-    def solve_smart_max_iter(self):
-        timeout = time.time() + self.time_limit_in_seconds
+    def solve_smart_max_iter(self, timeout):
         iteration = 0
         while iteration < self.max_iter:
             neighborhood = NeighborHood(init_solution = self.current_solution, critical_path = get_critical_path(self.current_solution), tabu_list = self.tabu_list).get_neighborhood()

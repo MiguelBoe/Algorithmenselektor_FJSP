@@ -66,10 +66,12 @@ if solver == "google":
     # Transformation der Daten in das richtige Format für die Visualisierung der Planung mit Hilfe von Plotly in einem Gantt-Diagramm.
     schedule_list = visualize_schedule(assigned_jobs=assigned_jobs, all_machines=all_machines, plan_date=0)
 elif solver == "meta":
+    # Starten des Timers.
+    timeout = time.time() + time_limit_in_seconds
     # Generierung einer Startlösung mit dem Verfahren von Giffler & Thompson.
     init_schedule = giffler_thompson(data[instance], priority_rule)
     # Durchführung der TabuSearch mit Hilfe der gefundenen initial Lösung. Ausgabe = Beste gefundene Lösung.
-    best_solution = TabuSearch(current_solution=init_schedule, max_iter=max_iter, tabu_list_length=int((len(data[instance].list_of_jobs)+data[instance].num_machines)/2), time_limit_in_seconds=time_limit_in_seconds).solve()
+    best_solution = TabuSearch(current_solution=init_schedule, max_iter=max_iter, tabu_list_length=int((len(data[instance].list_of_jobs)+data[instance].num_machines)/2), time_limit_in_seconds=time_limit_in_seconds).solve(timeout)
     # Transformation der Daten in das richtige Format für die Visualisierung der Planung mit Hilfe von Plotly in einem Gantt-Diagramm.
     schedule_list = get_schedule_list(best_solution.schedule)
     print(f'\nBest solution with TabuSearch found with a makespan of {best_solution.makespan}')
