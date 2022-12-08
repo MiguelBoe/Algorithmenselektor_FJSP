@@ -30,7 +30,7 @@ data_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\data'
 
 # Auswahl der Instanz des generierten Datensatzes.
 source = 'taillard' # own, taillard
-instance = 0
+instance = 22
 
 # Auswahl des Solvers und Definition des Zeitlimits der Planung.
 solver = 'meta'  # google, meta
