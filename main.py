@@ -25,6 +25,13 @@ import seaborn as sns
 
 # Konfigurationsbereich
 #----------------------------------------------------------------------------------------------------------------------#
+# Definition des Dateipfades.
+data_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\data'
+
+# Auswahl der Instanz des generierten Datensatzes.
+source = 'taillard' # own, taillard
+instance = 0
+
 # Auswahl des Solvers und Definition des Zeitlimits der Planung.
 solver = 'meta'  # google, meta
 time_limit_in_seconds = 5
@@ -32,18 +39,16 @@ time_limit_in_seconds = 5
 # Konfiguration der Metaheuristik.
 max_iter = 10000 # Maximierung der Iterationen der TabuSearch
 priority_rule = 'LRPT' # LPT, SPT, LRPT, SRPT
-
-# Auswahl der Instanz des generierten Datensatzes.
-instance = 7
-
-# Definition des Pfades, an welchem die Daten abgespeichert sind.
-data_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\data'
 #----------------------------------------------------------------------------------------------------------------------#
 
 
 # Einlesen der Daten.
-with open(f'{data_path}\\data.pkl', 'rb') as in_file:
-    data = pickle.load(in_file)
+if source == 'own':
+    with open(f'{data_path}\\data.pkl', 'rb') as in_file:
+        data = pickle.load(in_file)
+elif source == 'taillard':
+    with open(f'{data_path}\\taillard_data.pkl', 'rb') as in_file:
+        data = pickle.load(in_file)
 
 # Kleine Test-Instanz.
 # data = [  # task = (machine_id, processing_time).
