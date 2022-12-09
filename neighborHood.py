@@ -11,16 +11,19 @@ class NeighborhoodSolution:
     arc: Dict = field(default_factory=lambda: {})
 
 class NeighborHood:
-    def __init__(self, init_solution, critical_path, tabu_list):
+    def __init__(self, init_solution, critical_path, tabu_list, neighborhood_definition):
         self.init_solution = init_solution
         self.current_solution = {}
         self.neighborhood = {}
         self.tabu_list = tabu_list
         self.critical_path = critical_path
-        self.disjunctive_arcs = self.get_disjunctive_arcs()
+        if neighborhood_definition == 1:
+            self.disjunctive_arcs = self.neighborhood_definition_N1()
+        elif neighborhood_definition == 5:
+            self.disjunctive_arcs = self.neighborhood_definition_N5()
 
     # Mit dieser Funktion werden auf dem jeweiligen kritischen Pfad alle Arcs nach Nachbarschaftsdefinition N1 gefunden.
-    def get_disjunctive_arcs(self):
+    def neighborhood_definition_N1(self):
         critical_operations = self.critical_path.copy()
         keys = list(critical_operations.keys())
         disjunctive_arcs = []
@@ -30,17 +33,36 @@ class NeighborHood:
                 if critical_operations[i].machine_id == critical_operations[j].machine_id and \
                         ((critical_operations[i].task_on_machine_idx == critical_operations[j].task_on_machine_idx - 1) or \
                          (critical_operations[i].task_on_machine_idx == critical_operations[j].task_on_machine_idx + 1)):
-                    disjunctive_arcs.append([i, j])
+                    disjunctive_arcs.append([[i, j]])
             keys.remove(i)
 
-        # Es werden nur die Arcs, bzw. Moves ausgeführt, die nicht auf der Tabu-Liste stehen. Auf der Tabu-Liste wird beispielsweise
-        # der Arc (12,10) abgespeichert. Bei der untenstehenden Überprüfung werden die Arcs (12,10), aber auch (10,12) ausgeschlossen.
         current_tabu_list = self.tabu_list.copy()
-        for list_entry in range(len(current_tabu_list)): current_tabu_list.append([current_tabu_list[list_entry][1], current_tabu_list[list_entry][0]])
-        disjunctive_arcs = list(set(tuple(x) for x in disjunctive_arcs) - set(tuple(x) for x in current_tabu_list))
+        disjunctive_arcs = [item for item in disjunctive_arcs if item[0][0] not in current_tabu_list and item[0][1] not in current_tabu_list]
 
-        # Dies ist die Methode immer nur die Operations-ID's abzuspeichern. Allerdings waren hiermit die Ergebnisse etwas schlechter.
-        #disjunctive_arcs = [item for item in disjunctive_arcs if item[0] not in current_tabu_list and item[1] not in current_tabu_list]
+        return disjunctive_arcs
+
+    def neighborhood_definition_N5(self):
+        critical_operations = self.critical_path.copy()
+        keys = list(critical_operations.keys())
+        disjunctive_arcs = []
+
+        for i in keys:
+            for j in critical_operations[i].pred:
+                if j in keys:
+                    if critical_operations[i].job_id == critical_operations[j].job_id:
+                        block_j = {k: v for k, v in critical_operations.items() if v.machine_id == critical_operations[j].machine_id}
+                        block_i = {k: v for k, v in critical_operations.items() if v.machine_id == critical_operations[i].machine_id}
+                        try:
+                            pred_j = list({k: v for k, v in block_j.items() if v.end == critical_operations[j].start}.keys())[0]
+                            sucs_i = list({k: v for k, v in block_i.items() if v.start == critical_operations[i].end}.keys())[0]
+                            disjunctive_arcs.append([[pred_j, j], [i, sucs_i]])
+                        except Exception: pass
+
+        current_tabu_list = self.tabu_list.copy()
+        disjunctive_arcs = [item for item in disjunctive_arcs if item[0][0] not in current_tabu_list
+                            and item[0][1] not in current_tabu_list
+                            and item[1][0] not in current_tabu_list
+                            and item[1][1] not in current_tabu_list]
 
         return disjunctive_arcs
 
@@ -56,27 +78,29 @@ class NeighborHood:
     # In dieser Funktion wird der Swap-Move ausgeführt. Dafür wird die Position der Vorgänge im Dict vertrauscht und die task_on_machine_idx. Zusätzlich werden die Vorgänger Knoten der betroffenen Vorgänge aktualisiert.
     def swap(self, arc):
         # Durchführung des Moves
-        i, j = self.disjunctive_arcs[arc][0], self.disjunctive_arcs[arc][1]
-        self.current_solution[i].task_on_machine_idx, self.current_solution[j].task_on_machine_idx = self.current_solution[j].task_on_machine_idx, self.current_solution[i].task_on_machine_idx
-        new_order = list(self.current_solution.keys())
-        a, b = new_order.index(i), new_order.index(j)
-        new_order[b], new_order[a] = new_order[a], new_order[b]
-        self.current_solution = {k: self.current_solution[k] for k in new_order}
+        for a in self.disjunctive_arcs[arc]:
+            i, j = a[0], a[1]
+            self.current_solution[i].task_on_machine_idx, self.current_solution[j].task_on_machine_idx = \
+            self.current_solution[j].task_on_machine_idx, self.current_solution[i].task_on_machine_idx
+            new_order = list(self.current_solution.keys())
+            a, b = new_order.index(i), new_order.index(j)
+            new_order[b], new_order[a] = new_order[a], new_order[b]
+            self.current_solution = {k: self.current_solution[k] for k in new_order}
 
-        # Bestimmung für welche Vorgänge die Vorgänger aktualisiert werden müssen.
-        current_arc = [i, j]
-        for operation in list(self.current_solution.keys()):
-            if i in self.current_solution[operation].pred or j in self.current_solution[operation].pred:
-                current_arc.append(operation)
-        current_arc = set(current_arc)
+            # Bestimmung für welche Vorgänge die Vorgänger aktualisiert werden müssen.
+            current_arc = [i, j]
+            for operation in list(self.current_solution.keys()):
+                if i in self.current_solution[operation].pred or j in self.current_solution[operation].pred:
+                    current_arc.append(operation)
+            current_arc = set(current_arc)
 
-        # Aktualisierung der Vorgänger der betroffenen Vorgänge.
-        for i in current_arc:
-            self.current_solution[i].pred = get_predecessor(schedule=self.current_solution,
-                                                        task_id=self.current_solution[i].task_id,
-                                                        task_on_machine_idx=self.current_solution[i].task_on_machine_idx,
-                                                        machine_id=self.current_solution[i].machine_id,
-                                                        job_id=self.current_solution[i].job_id)
+            # Aktualisierung der Vorgänger der betroffenen Vorgänge.
+            for i in current_arc:
+                self.current_solution[i].pred = get_predecessor(schedule=self.current_solution,
+                                                                task_id=self.current_solution[i].task_id,
+                                                                task_on_machine_idx=self.current_solution[i].task_on_machine_idx,
+                                                                machine_id=self.current_solution[i].machine_id,
+                                                                job_id=self.current_solution[i].job_id)
 
     # Diese Funktion dient dafür die Start- und Endzeitpunkte der Vorgänge zu aktualisiern, um anschließend den neuen makespan zu bestimmen.
     def get_earliest_start(self):
