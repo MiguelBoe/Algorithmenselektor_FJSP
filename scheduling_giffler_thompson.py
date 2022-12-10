@@ -213,30 +213,3 @@ def get_prio_task_RPT(task_on_machine: list[Task], jobs_data: JobList, priority_
 def get_predecessor(schedule,task_id, task_on_machine_idx, machine_id, job_id):
     return [k for k, v in schedule.items() if (v.job_id == job_id and v.task_id ==task_id-1) or
             (v.machine_id==machine_id and v.task_on_machine_idx==task_on_machine_idx-1)]
-
-
-#### Daten zum Testen aus Ablaufplanung (F. Jaehn, E. Pesch)
-# jobs_data = [
-#     [(0, 5), (1, 3), (2, 3), (3, 2)],
-#     [(1, 4), (0, 7), (2, 8), (3, 6)],
-#     [(3, 3), (2, 5), (1, 6), (0, 1)],
-#     [(2, 4), (3, 7), (1, 1), (0, 2)],
-# ]
-
-# jobs_data = [
-#     [(0, 2), (1, 3), (2, 8)],
-#     [(0, 4), (1, 5), (2, 3)],
-#     [(0, 2), (1, 4), (2, 5)],
-#     [(0, 6), (1, 5), (2, 3)],
-# ]
-
-# #jobs_data = [
-#     [(0, 2), (1, 3), (2, 8)],
-#     [(2, 3), (0, 4), (1, 5)],
-#     [(1, 4), (0, 2), (2, 5)],
-#     [(2, 3), (1, 5), (0, 6) ],
-# ]
-
-# jobs_data = JobList(jobs_data)
-
-# (schedule, dict_list,) = giffler_thompson(jobs_data)

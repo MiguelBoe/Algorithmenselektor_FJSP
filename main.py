@@ -50,15 +50,6 @@ elif source == 'taillard':
     with open(f'{data_path}\\taillard_data.pkl', 'rb') as in_file:
         data = pickle.load(in_file)
 
-# Kleine Test-Instanz.
-# data = [  # task = (machine_id, processing_time).
-#     [(0, 5), (1, 3), (2, 3), (3, 2)],  # Job0
-#     [(1, 4), (0, 7), (2, 8), (3, 6)],  # Job1
-#     [(3, 3), (2, 5), (1, 6), (0, 1)],  # Job2
-#     [(2, 4), (3, 7), (1, 1), (0, 2)],  # Job3
-# ]
-# data = [JobList(data)]
-
 # Auswahl des Solvers mit entsprechendem Konfigurationsparameter.
 if solver == "google":
     # Ausführung Google CP_Solver.
