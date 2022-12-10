@@ -7,7 +7,7 @@ from jobList import JobList
 
 #Auswahl der Instanzen und Definition des Dateipfades.
 #----------------------------------------------------------------------------------------------------------------------#
-source = 'taillard' # own, taillard
+source = 'taillard' # train, taillard
 data_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\data'
 #----------------------------------------------------------------------------------------------------------------------#
 
@@ -38,7 +38,7 @@ def job_generator(max_job_count, max_machine_count, max_duration, instances_coun
         data.append(jobs_data)
 
     # Safe data
-    with open(f'{data_path}\\data.pkl', 'wb') as out_file:
+    with open(f'{data_path}\\train_data.pkl', 'wb') as out_file:
         pickle.dump(data, out_file)
 
     print('\nJobs created!')
@@ -64,7 +64,7 @@ def get_taillard_instances(data_path):
     print('\nJobs created!')
 
 
-if source == 'own':
+if source == 'train':
     job_generator(max_job_count, max_machine_count, max_duration, instances_count)
 elif source == 'taillard':
     data = get_taillard_instances(data_path)

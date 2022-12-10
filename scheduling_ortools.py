@@ -113,4 +113,4 @@ def ortools_scheduler(data, time_limit_in_seconds):
     # print('  - branches : %i' % solver.NumBranches())
     # print('  - wall time: %f s' % solver.WallTime())
 
-    return assigned_jobs, all_machines
+    return assigned_jobs, all_machines, solver.ObjectiveValue()
