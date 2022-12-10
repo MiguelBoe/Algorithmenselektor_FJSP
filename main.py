@@ -33,7 +33,7 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 data_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\data'
 
 # Auswahl der Instanz des generierten Datensatzes.
-source = 'train' # train, taillard
+source = 'train' # random, train, taillard
 instance = None
 
 # Auswahl des Solvers und Definition des Zeitlimits der Planung.
@@ -52,12 +52,8 @@ visualization_mode = False
 pathlib.Path(f'{data_path}\\results').mkdir(parents=True, exist_ok=True)
 
 # Einlesen der Daten.
-if source == 'train':
-    with open(f'{data_path}\\train_data.pkl', 'rb') as in_file:
-        data = pickle.load(in_file)
-elif source == 'taillard':
-    with open(f'{data_path}\\taillard_data.pkl', 'rb') as in_file:
-        data = pickle.load(in_file)
+with open(f'{data_path}\\{source}_data.pkl', 'rb') as in_file:
+    data = pickle.load(in_file)
 
 results = pd.DataFrame()
 for instance in range(len(data)):

@@ -40,7 +40,7 @@ class JobList:
         return [len(job) for job in self.list_of_jobs]
 
     @classmethod
-    def create(cls, max_duration, num_machines, num_jobs):
+    def create(cls, max_duration, num_machines, num_jobs, source):
         """
         Erstellen eines Jobs, bestehend aus mehreren Tasks.
 
@@ -65,11 +65,14 @@ class JobList:
         """
         list_of_jobs = []
 
-        for _ in range(num_jobs):
+        for job in range(num_jobs):
 
             # Zufällige Anzahl der Tasks in dem Job (min 1 Task, max so viele wie Maschinen)
 
-            num_tasks = random.randint(2, num_machines)
+            if source == 'random':
+                num_tasks = random.randint(2, num_machines)
+            else:
+                num_tasks = num_machines
 
             # Liste der verfügbaren Maschinen
             machine_list = list(range(num_machines))
