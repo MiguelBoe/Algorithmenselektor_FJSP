@@ -29,7 +29,7 @@ class AlgorithmSelector:
         if mode == 'train':
             self.train_source = train_source
             self.test_source = test_source
-        elif mode == 'test':
+        elif mode == 'selector':
             self.instance = instance
             self.model = model
             self.source = test_source
@@ -57,7 +57,7 @@ class AlgorithmSelector:
 
 
     def get_instance_features(self, request, data, results):
-        if self.mode == 'test':
+        if self.mode == 'selector':
             data = [data]
         instance_features = pd.DataFrame()
         for i in range(len(data)):

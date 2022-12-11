@@ -36,11 +36,11 @@ results_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\result
 models_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\models'
 
 # Auswahl der Instanz des generierten Datensatzes.
-source = 'taillard' # random, train, taillard
+source = 'train' # random, train, taillard
 instance = None
 
 # Auswahl des Solvers und Definition des Zeitlimits der Planung.
-solver = 'algorithm_selector'  # google, meta, algorithm_selector
+solver = 'meta'  # google, meta, algorithm_selector
 time_limit_in_seconds = 5
 
 # Konfiguration der Metaheuristik.
@@ -86,7 +86,7 @@ for instance in range(len(data)):
         print(f'Best solution with TabuSearch found with a makespan of {makespan}')
     elif solver == 'algorithm_selector':
         timeout = time.time() + time_limit_in_seconds
-        selection = AlgorithmSelector(mode = 'test', data_path = data_path, results_path = results_path, instance=data[instance], model = model, train_source = None, test_source = source).get_selection()
+        selection = AlgorithmSelector(mode = 'selector', data_path = data_path, results_path = results_path, instance=data[instance], model = model, train_source = None, test_source = source).get_selection()
         if selection == 0:
             assigned_jobs, all_machines, makespan = ortools_scheduler(data=data[instance].list_of_jobs, time_limit_in_seconds=time_limit_in_seconds)
             schedule_list = visualize_schedule(assigned_jobs=assigned_jobs, all_machines=all_machines, plan_date=0)

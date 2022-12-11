@@ -7,7 +7,7 @@ from jobList import JobList
 
 #Auswahl der Instanzen und Definition des Dateipfades.
 #----------------------------------------------------------------------------------------------------------------------#
-source = 'random' # random, train, taillard
+source = 'train' # random, train, taillard
 data_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\data'
 #----------------------------------------------------------------------------------------------------------------------#
 
@@ -23,10 +23,10 @@ instances_count = 10
 
 # Konfigurationsbereich für den job_generator_train
 #----------------------------------------------------------------------------------------------------------------------#
-num_jobs = [10, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100]
-num_machines = [10, 15, 20, 25]
+num_jobs = [15, 20, 30, 50, 100]
+num_machines = [15, 20]
 max_duration_train = 100
-instances_count_per_combination = 100
+instances_count_per_combination = 300
 #----------------------------------------------------------------------------------------------------------------------#
 
 
