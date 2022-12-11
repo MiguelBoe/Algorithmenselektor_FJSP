@@ -9,7 +9,14 @@ from sklearn.metrics import accuracy_score
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
+
+# Konfigurationsbereich.
+#----------------------------------------------------------------------------------------------------------------------#
 data_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\data'
+train = 'train'
+test = 'taillard'
+#----------------------------------------------------------------------------------------------------------------------#
+
 
 def get_results(data_path, source):
     with open(f'{data_path}\\{source}_data.pkl', 'rb') as in_file:
@@ -54,13 +61,17 @@ def get_instance_features(data_path, source, results):
     return instance_features
 
 
-def define_attributes(instance_features):
-    X = instance_features[['num_machines', 'num_jobs', 'avg_job_duration', 'min_job_duration', 'max_job_duration',
+def define_attributes(train_set, test_set):
+    X_train = train_set[['num_machines', 'num_jobs', 'avg_job_duration', 'min_job_duration', 'max_job_duration',
                            'task_with_duration_[0:10]', 'task_with_duration_[11:20]', 'task_with_duration_[21:30]', 'task_with_duration_[31:40]',
                            'task_with_duration_[41:50]', 'task_with_duration_[51:60]', 'task_with_duration_[61:70]', 'task_with_duration_[71:80]',
                            'task_with_duration_[81:90]', 'task_with_duration_[91:100]', 'task_with_duration_[>100]']]
-    y = instance_features['meta_better']
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+    y_train = train_set['meta_better']
+    X_test = test_set[['num_machines', 'num_jobs', 'avg_job_duration', 'min_job_duration', 'max_job_duration',
+                           'task_with_duration_[0:10]', 'task_with_duration_[11:20]', 'task_with_duration_[21:30]', 'task_with_duration_[31:40]',
+                           'task_with_duration_[41:50]', 'task_with_duration_[51:60]', 'task_with_duration_[61:70]', 'task_with_duration_[71:80]',
+                           'task_with_duration_[81:90]', 'task_with_duration_[91:100]', 'task_with_duration_[>100]']]
+    y_test = test_set['meta_better']
     return X_train, X_test, y_train, y_test
 
 
@@ -78,9 +89,9 @@ def random_forest(X_train, X_test, y_train, y_test ):
     return results, score
 
 
-results = get_results(data_path=data_path, source='taillard')
-instance_features = get_instance_features(data_path=data_path, source='taillard', results = results)
-X_train, X_test, y_train, y_test = define_attributes(instance_features)
+train_set = get_instance_features(data_path=data_path, source=train, results = get_results(data_path=data_path, source=train))
+test_set = get_instance_features(data_path=data_path, source=test, results = get_results(data_path=data_path, source=test))
+X_train, X_test, y_train, y_test = define_attributes(train_set, test_set)
 X_train, y_train = oversampling(X_train, y_train)
 results, score = random_forest(X_train, X_test, y_train, y_test )
-print()
+print('Done!')

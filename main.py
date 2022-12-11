@@ -37,7 +37,7 @@ source = 'train' # random, train, taillard
 instance = None
 
 # Auswahl des Solvers und Definition des Zeitlimits der Planung.
-solver = 'google'  # google, meta
+solver = 'meta'  # google, meta
 time_limit_in_seconds = 5
 
 # Konfiguration der Metaheuristik.
