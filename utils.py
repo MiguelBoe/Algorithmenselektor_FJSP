@@ -1,4 +1,4 @@
-from scheduling_giffler_thompson import ScheduledTask
+from giffler_thompson import ScheduledTask
 
 # Diese Funktion dient zur Transformation der Daten (von OR-Tools) für die Visualisierung.
 def visualize_schedule(assigned_jobs, all_machines, plan_date):
@@ -19,6 +19,7 @@ def get_schedule_list(schedule):
     schedule_list = []
     for k,v in schedule.items():
         schedule_list.append({'Task':v.machine_id, 'Start':v.start, 'Finish':v.end, 'Resource': f'Job_{v.job_id}'})
+    schedule_list = sorted(schedule_list, key=lambda x: x['Task'])
     return schedule_list
 
 # Mit dieser Funktion wird die topologische Sortierung der Adjazenzliste vorgenommen.
