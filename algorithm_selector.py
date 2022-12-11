@@ -38,7 +38,7 @@ def get_duration_intervals(instance):
     for job in instance.list_of_jobs:
         for task in job:
             duration = task[1]
-            duration_intervals[math.ceil(duration/10)] += 1
+            duration_intervals[min(math.ceil(duration/10),11)] += 1
     duration_intervals = {k: round((duration_intervals[k]/(instance.num_machines*len(instance.list_of_jobs)))*100,3) for k in duration_intervals.keys()}
     return duration_intervals
 

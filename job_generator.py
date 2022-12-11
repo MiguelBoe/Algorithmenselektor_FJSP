@@ -26,7 +26,7 @@ instances_count = 10
 num_jobs = [10, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100]
 num_machines = [10, 15, 20, 25]
 max_duration_train = 100
-instances_count_per_combination = 10
+instances_count_per_combination = 100
 #----------------------------------------------------------------------------------------------------------------------#
 
 
@@ -51,7 +51,7 @@ def job_generator_train(num_jobs, num_machines, max_duration_train, instances_co
     data = []
     for machines in num_machines:
         for jobs in num_jobs:
-            for i in range(instances_count):
+            for i in range(instances_count_per_combination):
                 jobs_data = JobList.create(max_duration_train, machines, jobs, source)
                 data.append(jobs_data)
     # Safe data
@@ -59,9 +59,9 @@ def job_generator_train(num_jobs, num_machines, max_duration_train, instances_co
         pickle.dump(data, out_file)
 
 
-def get_taillard_instances(data_path):
+def get_extern_instances(data_path, source):
     data = []
-    taillard_files = glob.glob(f'{data_path}\\taillard_instances\\*')
+    taillard_files = glob.glob(f'{data_path}\\{source}_instances\\*')
     for file in taillard_files:
         with open(file) as f:
             instance = []
@@ -74,7 +74,7 @@ def get_taillard_instances(data_path):
         data.append(instance)
 
     # Safe data
-    with open(f'{data_path}\\taillard_data.pkl', 'wb') as out_file:
+    with open(f'{data_path}\\{source}_data.pkl', 'wb') as out_file:
         pickle.dump(data, out_file)
 
 
@@ -82,7 +82,7 @@ if source == 'random':
     job_generator_random(max_job_count, max_machine_count, max_duration_random, instances_count)
 elif source == 'train':
     job_generator_train(num_jobs, num_machines, max_duration_train, instances_count_per_combination)
-elif source == 'taillard':
-    data = get_taillard_instances(data_path)
+else:
+    data = get_extern_instances(data_path, source)
 
 print('\nJobs created!')
