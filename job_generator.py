@@ -7,7 +7,7 @@ from jobList import JobList
 
 #Auswahl der Instanzen und Definition des Dateipfades.
 #----------------------------------------------------------------------------------------------------------------------#
-source = 'train' # random, train, taillard
+source = 'random' # random, train, taillard
 data_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\data'
 #----------------------------------------------------------------------------------------------------------------------#
 

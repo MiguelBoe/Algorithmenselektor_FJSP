@@ -31,13 +31,14 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 #----------------------------------------------------------------------------------------------------------------------#
 # Definition des Dateipfades.
 data_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\data'
+results_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\results'
 
 # Auswahl der Instanz des generierten Datensatzes.
-source = 'train' # random, train, taillard
+source = 'random' # random, train, taillard
 instance = None
 
 # Auswahl des Solvers und Definition des Zeitlimits der Planung.
-solver = 'meta'  # google, meta
+solver = 'meta'  # google, meta, algorithm_selector
 time_limit_in_seconds = 5
 
 # Konfiguration der Metaheuristik.
@@ -49,13 +50,15 @@ visualization_mode = False
 #----------------------------------------------------------------------------------------------------------------------#
 
 # Erstellung des Ordners, in welchem die Ergebnisse abgespeichert sind.
-pathlib.Path(f'{data_path}\\results').mkdir(parents=True, exist_ok=True)
+pathlib.Path(f'{results_path}\\reports').mkdir(parents=True, exist_ok=True)
+pathlib.Path(f'{results_path}\\schedules').mkdir(parents=True, exist_ok=True)
 
 # Einlesen der Daten.
 with open(f'{data_path}\\{source}_data.pkl', 'rb') as in_file:
     data = pickle.load(in_file)
 
 results = pd.DataFrame()
+schedule = {}
 for instance in range(len(data)):
     # Auswahl des Solvers mit entsprechendem Konfigurationsparameter.
     if solver == "google":
@@ -67,12 +70,16 @@ for instance in range(len(data)):
         # Starten des Timers.
         timeout = time.time() + time_limit_in_seconds
         # Generierung einer Startlösung mit dem Verfahren von Giffler & Thompson.
-        init_schedule = giffler_thompson(data[instance], priority_rule)
+        init_solution = giffler_thompson(data[instance], priority_rule)
         # Durchführung der TabuSearch mit Hilfe der gefundenen initial Lösung. Ausgabe = Beste gefundene Lösung.
-        best_solution = TabuSearch(current_solution=init_schedule, max_iter=max_iter, tabu_list_length=int((len(data[instance].list_of_jobs)+data[instance].num_machines)/2), time_limit_in_seconds=time_limit_in_seconds).smart_solve(timeout)
+        best_solution = TabuSearch(current_solution=init_solution, max_iter=max_iter, tabu_list_length=int((len(data[instance].list_of_jobs)+data[instance].num_machines)/2), time_limit_in_seconds=time_limit_in_seconds).smart_solve(timeout)
         # Transformation der Daten in das richtige Format für die Visualisierung der Planung mit Hilfe von Plotly in einem Gantt-Diagramm.
         schedule_list = get_schedule_list(best_solution.schedule)
         print(f'Best solution with TabuSearch found with a makespan of {best_solution.makespan}')
+    elif solver == 'algorithm_selector':
+        timeout = time.time() + time_limit_in_seconds
+
+        print()
 
     # Visualisierng der Planung mit Hilfe von Plotly in einem Gantt-Diagramm.
     if visualization_mode:
@@ -80,12 +87,13 @@ for instance in range(len(data)):
         fig.layout.xaxis.type = "linear"
         fig.show()
 
-    if solver == 'meta':
-        results = results.append({'Instanz':instance, 'Makespan': best_solution.makespan}, ignore_index=True)
-    elif solver == 'google':
-        results = results.append({'Instanz': instance, 'Makespan': google_makespan}, ignore_index=True)
+    if solver == 'meta': results = results.append({'Instanz':instance, 'Makespan': best_solution.makespan}, ignore_index=True)
+    elif solver == 'google': results = results.append({'Instanz': instance, 'Makespan': google_makespan}, ignore_index=True)
+    schedule.update({f'Instanz_{instance}': best_solution})
     print(f'Instance {instance} done!')
 
-results.to_csv(f'{data_path}\\results\\{source}_results_{solver}.csv', sep=',')
+results.to_csv(f'{results_path}\\reports\\{source}_report_{solver}.csv', sep=',')
+with open(f'{results_path}\\schedules\\{source}_schedule_{solver}.pkl', 'wb') as out_file:
+    pickle.dump(schedule, out_file)
 
 

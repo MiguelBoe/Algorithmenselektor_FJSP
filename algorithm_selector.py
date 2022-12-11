@@ -13,16 +13,17 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 # Konfigurationsbereich.
 #----------------------------------------------------------------------------------------------------------------------#
 data_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\data'
+results_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\results'
 train = 'train'
 test = 'taillard'
 #----------------------------------------------------------------------------------------------------------------------#
 
 
-def get_results(data_path, source):
+def get_results(data_path, results_path, source):
     with open(f'{data_path}\\{source}_data.pkl', 'rb') as in_file:
         data = pickle.load(in_file)
-    results_meta = pd.read_csv(f'{data_path}\\results\\{source}_results_meta.csv', sep=',', index_col=0)
-    results_google = pd.read_csv(f'{data_path}\\results\\{source}_results_google.csv', sep=',', index_col=0)
+    results_meta = pd.read_csv(f'{results_path}\\reports\\{source}_results_meta.csv', sep=',', index_col=0)
+    results_google = pd.read_csv(f'{results_path}\\reports\\{source}_results_google.csv', sep=',', index_col=0)
     results_meta = results_meta.rename(columns={'Makespan': 'meta'})
     results_google = results_google.rename(columns={'Makespan': 'google'})
     results = pd.merge(results_meta, results_google, on='Instanz')
@@ -89,8 +90,8 @@ def random_forest(X_train, X_test, y_train, y_test ):
     return results, score
 
 
-train_set = get_instance_features(data_path=data_path, source=train, results = get_results(data_path=data_path, source=train))
-test_set = get_instance_features(data_path=data_path, source=test, results = get_results(data_path=data_path, source=test))
+train_set = get_instance_features(data_path=data_path, source=train, results = get_results(data_path=data_path, results_path=results_path, source=train))
+test_set = get_instance_features(data_path=data_path, source=test, results = get_results(data_path=data_path, results_path=results_path, source=test))
 X_train, X_test, y_train, y_test = define_attributes(train_set, test_set)
 X_train, y_train = oversampling(X_train, y_train)
 results, score = random_forest(X_train, X_test, y_train, y_test )
