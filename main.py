@@ -12,10 +12,10 @@
 
 import pandas as pd
 from utils import *
-from scheduling_ortools import *
-from scheduling_giffler_thompson import giffler_thompson
+from cp_solver import *
+from giffler_thompson import giffler_thompson
 import plotly.figure_factory as ff
-from scheduling_giffler_thompson import get_predecessor
+from giffler_thompson import get_predecessor
 from tabuSearch import TabuSearch
 from jobList import JobList
 import pickle

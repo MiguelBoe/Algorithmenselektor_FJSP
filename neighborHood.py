@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from scheduling_giffler_thompson import get_predecessor
+from giffler_thompson import get_predecessor
 from typing import Dict
 from utils import topological_sort_earliest_start, current_solution_create_copy
 

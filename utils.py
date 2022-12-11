@@ -1,4 +1,4 @@
-from scheduling_giffler_thompson import ScheduledTask
+from giffler_thompson import ScheduledTask
 
 # Diese Funktion dient zur Transformation der Daten (von OR-Tools) für die Visualisierung.
 def visualize_schedule(assigned_jobs, all_machines, plan_date):
