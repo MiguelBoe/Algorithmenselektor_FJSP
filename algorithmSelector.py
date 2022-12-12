@@ -85,8 +85,8 @@ class AlgorithmSelector:
 
 
     def get_results(self, request, data, source):
-        results_meta = pd.read_csv(f'{self.results_path}\\reports\\{source}_results_meta.csv', sep=',', index_col=0)
-        results_google = pd.read_csv(f'{self.results_path}\\reports\\{source}_results_google.csv', sep=',', index_col=0)
+        results_meta = pd.read_csv(f'{self.results_path}\\reports\\{source}_report_meta.csv', sep=',', index_col=0)
+        results_google = pd.read_csv(f'{self.results_path}\\reports\\{source}_report_google.csv', sep=',', index_col=0)
         results_meta = results_meta.rename(columns={'Makespan': 'meta'})
         results_google = results_google.rename(columns={'Makespan': 'google'})
         results = pd.merge(results_meta, results_google, on='Instanz')
