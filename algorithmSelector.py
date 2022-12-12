@@ -130,7 +130,7 @@ class AlgorithmSelector:
 
 
     def random_forest(self):
-        self.random_forest_model = make_pipeline(StandardScaler(), RandomForestClassifier(max_depth=1000)).fit(self.X_train, self.y_train)
+        self.random_forest_model = make_pipeline(StandardScaler(), RandomForestClassifier(max_depth=5)).fit(self.X_train, self.y_train)
         self.results = pd.DataFrame({'prediction':self.random_forest_model.predict(self.X_test)}, index=self.X_test.index)
         self.results['y_test'] = self.y_test
         self.score = accuracy_score(self.results['y_test'], self.results['prediction'])
