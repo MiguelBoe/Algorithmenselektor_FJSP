@@ -85,12 +85,12 @@ for instance in range(len(data)):
         makespan = best_solution.makespan
         print(f'Best solution with TabuSearch found with a makespan of {makespan}')
     elif solver == 'algorithm_selector':
-        timeout = time.time() + time_limit_in_seconds
         selection = AlgorithmSelector(mode = 'selector', data_path = data_path, results_path = results_path, instance=data[instance], model = model, train_source = None, test_source = source).get_selection()
         if selection == 0:
             assigned_jobs, all_machines, makespan = ortools_scheduler(data=data[instance].list_of_jobs, time_limit_in_seconds=time_limit_in_seconds)
             schedule_list = visualize_schedule(assigned_jobs=assigned_jobs, all_machines=all_machines, plan_date=0)
         elif selection == 1:
+            timeout = time.time() + time_limit_in_seconds
             init_solution = giffler_thompson(data[instance], priority_rule)
             best_solution = TabuSearch(current_solution=init_solution, max_iter=max_iter, tabu_list_length=int((len(data[instance].list_of_jobs) + data[instance].num_machines) / 2), time_limit_in_seconds=time_limit_in_seconds).smart_solve(timeout)
             schedule_list = get_schedule_list(best_solution.schedule)
