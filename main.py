@@ -40,7 +40,7 @@ source = 'test' # random, train, test, taillard
 instance = None
 
 # Auswahl des Solvers und Definition des Zeitlimits der Planung.
-solver = 'meta'  # google, meta, algorithm_selector
+solver = 'algorithm_selector'  # google, meta, algorithm_selector
 time_limit_in_seconds = 5
 
 # Konfiguration der Metaheuristik.
@@ -49,6 +49,7 @@ priority_rule = 'LRPT' # LPT, SPT, LRPT, SRPT
 
 # Fertigen Ablaufplan im Gantt-Chart visualisieren? Sollte nur bei einzelnen Instanzen gemacht werden.
 visualization_mode = False
+safe_schedule = False
 #----------------------------------------------------------------------------------------------------------------------#
 
 # Erstellung des Ordners, in welchem die Ergebnisse abgespeichert sind.
@@ -109,5 +110,6 @@ for instance in range(len(data)):
     print(f'Instance {instance} done!')
 
 results.to_csv(f'{results_path}\\reports\\{source}_report_{solver}.csv', sep=',')
-with open(f'{results_path}\\schedules\\{source}_schedule_{solver}.pkl', 'wb') as out_file:
-    pickle.dump(schedule, out_file)
+if safe_schedule:
+    with open(f'{results_path}\\schedules\\{source}_schedule_{solver}.pkl', 'wb') as out_file:
+        pickle.dump(schedule, out_file)
