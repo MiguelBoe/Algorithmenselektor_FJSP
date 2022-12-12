@@ -3,6 +3,8 @@ import pathlib
 import pandas as pd
 import numpy as np
 import math
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
 from imblearn.over_sampling import RandomOverSampler
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
@@ -16,7 +18,7 @@ data_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\data'
 results_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\results'
 models_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\models'
 train_source = 'train'
-test_source = 'taillard'
+test_source = 'test'
 #----------------------------------------------------------------------------------------------------------------------#
 
 pathlib.Path(models_path).mkdir(parents=True, exist_ok=True)
@@ -85,8 +87,8 @@ class AlgorithmSelector:
 
 
     def get_results(self, request, data, source):
-        results_meta = pd.read_csv(f'{self.results_path}\\reports\\{source}_results_meta.csv', sep=',', index_col=0)
-        results_google = pd.read_csv(f'{self.results_path}\\reports\\{source}_results_google.csv', sep=',', index_col=0)
+        results_meta = pd.read_csv(f'{self.results_path}\\reports\\{source}_report_meta.csv', sep=',', index_col=0)
+        results_google = pd.read_csv(f'{self.results_path}\\reports\\{source}_report_google.csv', sep=',', index_col=0)
         results_meta = results_meta.rename(columns={'Makespan': 'meta'})
         results_google = results_google.rename(columns={'Makespan': 'google'})
         results = pd.merge(results_meta, results_google, on='Instanz')
@@ -128,10 +130,11 @@ class AlgorithmSelector:
 
 
     def random_forest(self):
-        self.random_forest_model = RandomForestClassifier(max_depth=10).fit(self.X_train, self.y_train)
+        self.random_forest_model = make_pipeline(StandardScaler(), RandomForestClassifier(max_depth=5)).fit(self.X_train, self.y_train)
         self.results = pd.DataFrame({'prediction':self.random_forest_model.predict(self.X_test)}, index=self.X_test.index)
         self.results['y_test'] = self.y_test
         self.score = accuracy_score(self.results['y_test'], self.results['prediction'])
+
 
 if __name__ == "__main__":
     AlgorithmSelector(mode = 'train', data_path = data_path, results_path = results_path, instance = None, model = None, train_source = train_source, test_source = test_source).training()

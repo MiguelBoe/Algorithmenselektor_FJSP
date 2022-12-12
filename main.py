@@ -36,11 +36,11 @@ results_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\result
 models_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\models'
 
 # Auswahl der Instanz des generierten Datensatzes.
-source = 'train' # random, train, taillard
+source = 'test' # random, train, test, taillard
 instance = None
 
 # Auswahl des Solvers und Definition des Zeitlimits der Planung.
-solver = 'meta'  # google, meta, algorithm_selector
+solver = 'algorithm_selector'  # google, meta, algorithm_selector
 time_limit_in_seconds = 5
 
 # Konfiguration der Metaheuristik.
@@ -49,6 +49,7 @@ priority_rule = 'LRPT' # LPT, SPT, LRPT, SRPT
 
 # Fertigen Ablaufplan im Gantt-Chart visualisieren? Sollte nur bei einzelnen Instanzen gemacht werden.
 visualization_mode = False
+safe_schedule = False
 #----------------------------------------------------------------------------------------------------------------------#
 
 # Erstellung des Ordners, in welchem die Ergebnisse abgespeichert sind.
@@ -85,12 +86,12 @@ for instance in range(len(data)):
         makespan = best_solution.makespan
         print(f'Best solution with TabuSearch found with a makespan of {makespan}')
     elif solver == 'algorithm_selector':
-        timeout = time.time() + time_limit_in_seconds
         selection = AlgorithmSelector(mode = 'selector', data_path = data_path, results_path = results_path, instance=data[instance], model = model, train_source = None, test_source = source).get_selection()
         if selection == 0:
             assigned_jobs, all_machines, makespan = ortools_scheduler(data=data[instance].list_of_jobs, time_limit_in_seconds=time_limit_in_seconds)
             schedule_list = visualize_schedule(assigned_jobs=assigned_jobs, all_machines=all_machines, plan_date=0)
         elif selection == 1:
+            timeout = time.time() + time_limit_in_seconds
             init_solution = giffler_thompson(data[instance], priority_rule)
             best_solution = TabuSearch(current_solution=init_solution, max_iter=max_iter, tabu_list_length=int((len(data[instance].list_of_jobs) + data[instance].num_machines) / 2), time_limit_in_seconds=time_limit_in_seconds).smart_solve(timeout)
             schedule_list = get_schedule_list(best_solution.schedule)
@@ -109,7 +110,6 @@ for instance in range(len(data)):
     print(f'Instance {instance} done!')
 
 results.to_csv(f'{results_path}\\reports\\{source}_report_{solver}.csv', sep=',')
-with open(f'{results_path}\\schedules\\{source}_schedule_{solver}.pkl', 'wb') as out_file:
-    pickle.dump(schedule, out_file)
-
-
+if safe_schedule:
+    with open(f'{results_path}\\schedules\\{source}_schedule_{solver}.pkl', 'wb') as out_file:
+        pickle.dump(schedule, out_file)
