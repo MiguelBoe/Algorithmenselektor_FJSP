@@ -36,7 +36,7 @@ results_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\result
 models_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\models'
 
 # Auswahl der Instanz des generierten Datensatzes.
-source = 'train' # random, train, taillard
+source = 'test' # random, train, test, taillard
 instance = None
 
 # Auswahl des Solvers und Definition des Zeitlimits der Planung.
@@ -111,5 +111,3 @@ for instance in range(len(data)):
 results.to_csv(f'{results_path}\\reports\\{source}_report_{solver}.csv', sep=',')
 with open(f'{results_path}\\schedules\\{source}_schedule_{solver}.pkl', 'wb') as out_file:
     pickle.dump(schedule, out_file)
-
-

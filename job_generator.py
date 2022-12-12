@@ -7,7 +7,7 @@ from jobList import JobList
 
 #Auswahl der Instanzen und Definition des Dateipfades.
 #----------------------------------------------------------------------------------------------------------------------#
-source = 'train' # random, train, taillard
+source = 'test' # random, train, test, taillard
 data_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\data'
 #----------------------------------------------------------------------------------------------------------------------#
 
@@ -21,12 +21,12 @@ instances_count = 10
 #----------------------------------------------------------------------------------------------------------------------#
 
 
-# Konfigurationsbereich für den job_generator_train
+# Konfigurationsbereich für den job_generator_train_or_test
 #----------------------------------------------------------------------------------------------------------------------#
 num_jobs = [15, 20, 30, 50, 100]
 num_machines = [15, 20]
 max_duration_train = 100
-instances_count_per_combination = 300
+instances_count_per_combination = 3
 #----------------------------------------------------------------------------------------------------------------------#
 
 
@@ -47,7 +47,7 @@ def job_generator_random(max_job_count, max_machine_count, max_duration, instanc
         pickle.dump(data, out_file)
 
 
-def job_generator_train(num_jobs, num_machines, max_duration_train, instances_count_per_combination):
+def job_generator_train_or_test(num_jobs, num_machines, max_duration_train, instances_count_per_combination):
     data = []
     for machines in num_machines:
         for jobs in num_jobs:
@@ -55,7 +55,7 @@ def job_generator_train(num_jobs, num_machines, max_duration_train, instances_co
                 jobs_data = JobList.create(max_duration_train, machines, jobs, source)
                 data.append(jobs_data)
     # Safe data
-    with open(f'{data_path}\\train_data.pkl', 'wb') as out_file:
+    with open(f'{data_path}\\{source}_data.pkl', 'wb') as out_file:
         pickle.dump(data, out_file)
 
 
@@ -80,8 +80,8 @@ def get_extern_instances(data_path, source):
 
 if source == 'random':
     job_generator_random(max_job_count, max_machine_count, max_duration_random, instances_count)
-elif source == 'train':
-    job_generator_train(num_jobs, num_machines, max_duration_train, instances_count_per_combination)
+elif source == 'train' or source == 'test':
+    job_generator_train_or_test(num_jobs, num_machines, max_duration_train, instances_count_per_combination)
 else:
     data = get_extern_instances(data_path, source)
 

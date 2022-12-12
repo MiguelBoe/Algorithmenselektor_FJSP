@@ -18,7 +18,7 @@ data_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\data'
 results_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\results'
 models_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\models'
 train_source = 'train'
-test_source = 'taillard'
+test_source = 'test'
 #----------------------------------------------------------------------------------------------------------------------#
 
 pathlib.Path(models_path).mkdir(parents=True, exist_ok=True)
@@ -130,7 +130,7 @@ class AlgorithmSelector:
 
 
     def random_forest(self):
-        self.random_forest_model = make_pipeline(StandardScaler(), RandomForestClassifier(max_depth=10)).fit(self.X_train, self.y_train)
+        self.random_forest_model = make_pipeline(StandardScaler(), RandomForestClassifier(max_depth=1000, random_state=14)).fit(self.X_train, self.y_train)
         self.results = pd.DataFrame({'prediction':self.random_forest_model.predict(self.X_test)}, index=self.X_test.index)
         self.results['y_test'] = self.y_test
         self.score = accuracy_score(self.results['y_test'], self.results['prediction'])
