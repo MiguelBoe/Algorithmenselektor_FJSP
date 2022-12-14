@@ -3,6 +3,7 @@ import pathlib
 import pandas as pd
 import numpy as np
 import math
+from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from imblearn.over_sampling import RandomOverSampler
@@ -19,18 +20,20 @@ results_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\result
 models_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\models'
 train_source = 'train'
 test_source = 'test'
+validate_test_set = False
 #----------------------------------------------------------------------------------------------------------------------#
 
 pathlib.Path(models_path).mkdir(parents=True, exist_ok=True)
 
 class AlgorithmSelector:
-    def __init__(self, mode, data_path, results_path, instance, model, train_source, test_source):
+    def __init__(self, mode, data_path, results_path, instance, model, train_source, test_source, validate_test_set):
         self.mode = mode
         self.data_path = data_path
         self.results_path = results_path
         if mode == 'train':
             self.train_source = train_source
             self.test_source = test_source
+            self.validate_test_set = validate_test_set
         elif mode == 'selector':
             self.instance = instance
             self.model = model
@@ -112,16 +115,19 @@ class AlgorithmSelector:
 
 
     def define_attributes(self):
-        self.X_train = self.train_set[['num_machines', 'num_jobs', 'avg_job_duration', 'min_job_duration', 'max_job_duration',
-                               'task_with_duration_[0:10]', 'task_with_duration_[11:20]', 'task_with_duration_[21:30]', 'task_with_duration_[31:40]',
-                               'task_with_duration_[41:50]', 'task_with_duration_[51:60]', 'task_with_duration_[61:70]', 'task_with_duration_[71:80]',
-                               'task_with_duration_[81:90]', 'task_with_duration_[91:100]', 'task_with_duration_[>100]']]
+        self.attributes = ['num_machines', 'num_jobs', 'avg_job_duration', 'min_job_duration', 'max_job_duration',
+                           'task_with_duration_[0:10]', 'task_with_duration_[11:20]', 'task_with_duration_[21:30]', 'task_with_duration_[31:40]',
+                           'task_with_duration_[41:50]', 'task_with_duration_[51:60]', 'task_with_duration_[61:70]', 'task_with_duration_[71:80]',
+                           'task_with_duration_[81:90]', 'task_with_duration_[91:100]', 'task_with_duration_[>100]']
+
+        self.X_train = self.train_set[self.attributes]
         self.y_train = self.train_set['meta_better']
-        self.X_test = self.test_set[['num_machines', 'num_jobs', 'avg_job_duration', 'min_job_duration', 'max_job_duration',
-                               'task_with_duration_[0:10]', 'task_with_duration_[11:20]', 'task_with_duration_[21:30]', 'task_with_duration_[31:40]',
-                               'task_with_duration_[41:50]', 'task_with_duration_[51:60]', 'task_with_duration_[61:70]', 'task_with_duration_[71:80]',
-                               'task_with_duration_[81:90]', 'task_with_duration_[91:100]', 'task_with_duration_[>100]']]
-        self.y_test = self.test_set['meta_better']
+
+        if validate_test_set:
+            self.X_test = self.test_set[self.attributes]
+            self.y_test = self.test_set['meta_better']
+        else:
+            self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X_train, self.y_train, test_size=0.1)
 
 
     def oversampling(self):
@@ -137,4 +143,4 @@ class AlgorithmSelector:
 
 
 if __name__ == "__main__":
-    AlgorithmSelector(mode = 'train', data_path = data_path, results_path = results_path, instance = None, model = None, train_source = train_source, test_source = test_source).training()
+    AlgorithmSelector(mode = 'train', data_path = data_path, results_path = results_path, instance = None, model = None, train_source = train_source, test_source = test_source, validate_test_set=validate_test_set).training()
