@@ -71,7 +71,7 @@ class NeighborHood:
         for arc in range(len(self.disjunctive_arcs)):
             self.current_solution = current_solution_create_copy(self.init_solution)  # 1. Als erstes wird eine Kopie erstellt, damit die aktuelle Lösung nicht überschrieben wird. Kostet viel Laufzeit.
             self.swap(arc)                                                            # 2. Als nächstes wird der Swap-Move ausgeführt.
-            self.get_earliest_start()                                                 # 3. Die Startpunkte jeder Operation werden definiert, wodurch zudem der makespan der Lösung definiert werden kann. Kostet viel Laufzeit, sollte jedoch in O(n) sein.
+            self.get_release_times()                                                 # 3. Die Startpunkte jeder Operation werden definiert, wodurch zudem der makespan der Lösung definiert werden kann. Kostet viel Laufzeit, sollte jedoch in O(n) sein.
             self.create_neighborhood(arc)                                             # 4. Die Lösung wird in einem Objekt abgespeichert.
         return self.neighborhood                                                      # 5. die gefundene Nachbarschaft wird an die TabuSearch übergeben.
 
@@ -103,7 +103,7 @@ class NeighborHood:
                                                                 job_id=self.current_solution[i].job_id)
 
     # Diese Funktion dient dafür die Start- und Endzeitpunkte der Vorgänge zu aktualisiern, um anschließend den neuen makespan zu bestimmen.
-    def get_earliest_start(self):
+    def get_release_times(self):
         # Zunächst müssen dafür die Vorgänge mit Hilfe einer Adjazenzliste in eine topologische Reihenfolge gebracht werden. Dies funktioniert in O(n).
         new_topological_order = topological_sort_earliest_start(self.current_solution)
         #Als nächstes werden die Start- und Endzeitpunkte der Reihe nach aktualisiert. Dies funktioniert ebenfalls in O(n). Demnach liegt die Gesamtlaufzeit der Funktion in O(n).
