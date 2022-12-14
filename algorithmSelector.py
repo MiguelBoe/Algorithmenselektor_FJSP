@@ -68,6 +68,7 @@ class AlgorithmSelector:
         for i in range(len(data)):
             instance = data[i]
             duration_intervals = self.get_duration_intervals(instance=instance)
+            percent_conflicts = self.get_conflicts(instance=instance)
             features = {'num_machines': instance.num_machines, 'num_jobs': len(instance.list_of_jobs),
                         'avg_job_duration': np.mean(instance.job_durations),
                         'min_job_duration': min(instance.job_durations),
@@ -82,7 +83,8 @@ class AlgorithmSelector:
                         'task_with_duration_[71:80]': duration_intervals[8],
                         'task_with_duration_[81:90]': duration_intervals[9],
                         'task_with_duration_[91:100]': duration_intervals[10],
-                        'task_with_duration_[>100]': duration_intervals[11]}
+                        'task_with_duration_[>100]': duration_intervals[11],
+                        'percent_conflicts': percent_conflicts}
             if self.mode == 'train': features.update({'meta_better': results['meta_better'].iat[i]})
             instance_features = instance_features.append(features, ignore_index=True)
         if self.mode == 'train': instance_features['meta_better'] = instance_features['meta_better'].astype(int)
@@ -114,11 +116,20 @@ class AlgorithmSelector:
         return duration_intervals
 
 
+    def get_conflicts(self, instance):
+        conflicts = {}
+        for i in range(instance.num_machines):
+            conflicts.update({i:(len(instance)-len(set([j[i][0] for j in instance.list_of_jobs])))})
+        num_conflicts = sum(conflicts.values())
+        percent_conflicts = round((num_conflicts/(len(instance)*instance.num_machines))*100,2)
+        return percent_conflicts
+
+
     def define_attributes(self):
         self.attributes = ['num_machines', 'num_jobs', 'avg_job_duration', 'min_job_duration', 'max_job_duration',
                            'task_with_duration_[0:10]', 'task_with_duration_[11:20]', 'task_with_duration_[21:30]', 'task_with_duration_[31:40]',
                            'task_with_duration_[41:50]', 'task_with_duration_[51:60]', 'task_with_duration_[61:70]', 'task_with_duration_[71:80]',
-                           'task_with_duration_[81:90]', 'task_with_duration_[91:100]', 'task_with_duration_[>100]']
+                           'task_with_duration_[81:90]', 'task_with_duration_[91:100]', 'task_with_duration_[>100]', 'percent_conflicts']
 
         self.X_train = self.train_set[self.attributes]
         self.y_train = self.train_set['meta_better']
@@ -136,7 +147,7 @@ class AlgorithmSelector:
 
 
     def random_forest(self):
-        self.random_forest_model = make_pipeline(StandardScaler(), RandomForestClassifier(max_depth=5)).fit(self.X_train, self.y_train)
+        self.random_forest_model = make_pipeline(StandardScaler(), RandomForestClassifier(max_depth=10)).fit(self.X_train, self.y_train)
         self.results = pd.DataFrame({'prediction':self.random_forest_model.predict(self.X_test)}, index=self.X_test.index)
         self.results['y_test'] = self.y_test
         self.score = accuracy_score(self.results['y_test'], self.results['prediction'])
