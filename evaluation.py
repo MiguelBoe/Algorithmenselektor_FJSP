@@ -51,10 +51,8 @@ def visualize_it(source, results_path):
     for i in range(len(data)):
         instance = data[i]
         df = df.append({'num_jobs': len(instance.list_of_jobs),'num_machines': instance.num_machines}, ignore_index=True)
-    results_meta = pd.read_csv(f'{results_path}\\reports\\{source}_report_meta.csv', sep=',', index_col=0)[
-        'Makespan']
-    results_google = pd.read_csv(f'{results_path}\\reports\\{source}_report_google.csv', sep=',', index_col=0)[
-        'Makespan']
+    results_meta = pd.read_csv(f'{results_path}\\reports\\{source}_report_meta.csv', sep=',', index_col=0)['Makespan']
+    results_google = pd.read_csv(f'{results_path}\\reports\\{source}_report_google.csv', sep=',', index_col=0)['Makespan']
     df['meta'] = results_meta
     df['google'] = results_google
     df = df.sort_values(by=['num_jobs'])
