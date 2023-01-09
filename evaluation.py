@@ -40,7 +40,7 @@ worse = round(worse_count/len(results_merge)*100,2)
 
 # Calculation of the result_coefficient.
 result_coefficient = round((better_count-worse_count)/len(results_merge),2)
-print('Done!')
+print('\nEvaluation Done!')
 
 
 # Visualisierung des Vergleichs der Metaheuristik und des CP-Solvers anhand der Test-Instanz.
