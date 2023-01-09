@@ -27,7 +27,7 @@ class TabuSearch:
             else: break
         return self.best_solutions[min(self.best_solutions, key=lambda key: self.best_solutions[key].makespan)]
 
-    def smart_solve(self, timeout):
+    def variable_solve(self, timeout):
         iteration = 0
         while time.time() < timeout:
             if iteration < self.max_iter:

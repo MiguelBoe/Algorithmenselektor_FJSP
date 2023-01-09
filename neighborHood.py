@@ -71,7 +71,7 @@ class NeighborHood:
         for arc in range(len(self.disjunctive_arcs)):
             self.current_solution = current_solution_create_copy(self.init_solution)  # 1. Als erstes wird eine Kopie erstellt, damit die aktuelle Lösung nicht überschrieben wird. Kostet viel Laufzeit.
             self.swap(arc)                                                            # 2. Als nächstes wird der Swap-Move ausgeführt.
-            self.get_release_times()                                                 # 3. Die Startpunkte jeder Operation werden definiert, wodurch zudem der makespan der Lösung definiert werden kann. Kostet viel Laufzeit, sollte jedoch in O(n) sein.
+            self.get_release_times()                                                  # 3. Die Startpunkte jeder Operation werden definiert, wodurch zudem der makespan der Lösung definiert werden kann. Kostet viel Laufzeit, sollte jedoch in O(n) sein.
             self.create_neighborhood(arc)                                             # 4. Die Lösung wird in einem Objekt abgespeichert.
         return self.neighborhood                                                      # 5. die gefundene Nachbarschaft wird an die TabuSearch übergeben.
 

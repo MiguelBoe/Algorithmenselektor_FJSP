@@ -80,20 +80,23 @@ for instance in range(len(data)):
         # Generierung einer Startlösung mit dem Verfahren von Giffler & Thompson.
         init_solution = giffler_thompson(data[instance], priority_rule)
         # Durchführung der TabuSearch mit Hilfe der gefundenen initial Lösung. Ausgabe = Beste gefundene Lösung.
-        best_solution = TabuSearch(current_solution=init_solution, max_iter=max_iter, tabu_list_length=int((len(data[instance].list_of_jobs)+data[instance].num_machines)/2), time_limit_in_seconds=time_limit_in_seconds).smart_solve(timeout)
+        best_solution = TabuSearch(current_solution=init_solution, max_iter=max_iter, tabu_list_length=int((len(data[instance].list_of_jobs)+data[instance].num_machines)/2), time_limit_in_seconds=time_limit_in_seconds).variable_solve(timeout)
         # Transformation der Daten in das richtige Format für die Visualisierung der Planung mit Hilfe von Plotly in einem Gantt-Diagramm.
         schedule_list = get_schedule_list(best_solution.schedule)
         makespan = best_solution.makespan
         print(f'Best solution with TabuSearch found with a makespan of {makespan}')
     elif solver == 'algorithm_selector':
+        # Der Algorithmenselektor prognostiziert mit welchem Verfahren die betrachtete Instanz besser gelöst werden kann.
         selection = AlgorithmSelector(mode = 'selector', data_path = data_path, results_path = results_path, instance=data[instance], model = model, train_source = None, test_source = source, validate_test_set=None).get_selection()
+        # Bei selection = 0 ist der CP-Solver besser. In diesem Fall wird die Instanz wie in den Zeilen 72 bis 76 gelöst.
         if selection == 0:
             assigned_jobs, all_machines, makespan = ortools_scheduler(data=data[instance].list_of_jobs, time_limit_in_seconds=time_limit_in_seconds)
             schedule_list = visualize_schedule(assigned_jobs=assigned_jobs, all_machines=all_machines, plan_date=0)
+        # Bei selection = 1 ist die Metaheuristik besser. In diesem Fall wird die Instanz wie in den Zeilen 77 bis 87 gelöst.
         elif selection == 1:
             timeout = time.time() + time_limit_in_seconds
             init_solution = giffler_thompson(data[instance], priority_rule)
-            best_solution = TabuSearch(current_solution=init_solution, max_iter=max_iter, tabu_list_length=int((len(data[instance].list_of_jobs) + data[instance].num_machines) / 2), time_limit_in_seconds=time_limit_in_seconds).smart_solve(timeout)
+            best_solution = TabuSearch(current_solution=init_solution, max_iter=max_iter, tabu_list_length=int((len(data[instance].list_of_jobs) + data[instance].num_machines) / 2), time_limit_in_seconds=time_limit_in_seconds).variable_solve(timeout)
             schedule_list = get_schedule_list(best_solution.schedule)
             makespan = best_solution.makespan
             print(f'Best solution with TabuSearch found with a makespan of {makespan}')
@@ -103,12 +106,14 @@ for instance in range(len(data)):
         fig = ff.create_gantt(schedule_list, index_col="Resource", show_colorbar=True, group_tasks=True, colors=sns.color_palette(cc.glasbey, n_colors=(len(data[instance].list_of_jobs))))
         fig.layout.xaxis.type = "linear"
         fig.show()
-
+    
+    # Abspeicherung der Ablaufpläne.
     if solver == 'algorithm_selector': results = results.append({'Instanz':instance, 'Makespan': makespan, 'Solver': selection}, ignore_index=True)
     else: results = results.append({'Instanz':instance, 'Makespan': makespan}, ignore_index=True)
     schedule.update({f'Instanz_{instance}': schedule_list})
     print(f'Instance {instance} done!')
 
+# Wenn safe_schedule = 1 ist, werden die generierten Ablaufpläne abgespeichert.
 results.to_csv(f'{results_path}\\reports\\{source}_report_{solver}.csv', sep=',')
 if safe_schedule:
     with open(f'{results_path}\\schedules\\{source}_schedule_{solver}.pkl', 'wb') as out_file:

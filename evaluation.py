@@ -43,6 +43,7 @@ result_coefficient = round((better_count-worse_count)/len(results_merge),2)
 print('Done!')
 
 
+# Visualisierung des Vergleichs der Metaheuristik und des CP-Solvers anhand der Test-Instanz.
 def visualize_it(source, results_path):
     with open(f'\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\data\\{source}_data.pkl', 'rb') as in_file:
         data = pickle.load(in_file)
