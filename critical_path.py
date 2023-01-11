@@ -1,27 +1,9 @@
 from jobList import JobList
-from scheduling_giffler_thompson import ScheduledTask, giffler_thompson
+from giffler_thompson import ScheduledTask, giffler_thompson
+from Schedule import Schedule
 
 
-def main():
-    #### Daten zum Testen aus Ablaufplanung (F. Jaehn, E. Pesch)
-    jobs_data = [
-        [(2, 3), (1, 5), (3, 8), (0, 2)],
-        [(0, 6), (1, 4), (2, 2), (3, 5)],
-        [(1, 3), (0, 1), (2, 6), (3, 2)],
-        [(2, 3), (1, 7), (0, 5), (3, 1)],
-        [(3, 3), (2, 4), (1, 1), (0, 6)],
-    ]
-
-    #    jobs_data = [
-    #     [(0, 5), (1, 3), (2, 3), (3, 2)],
-    #     [(1, 4), (0, 7), (2, 8), (3, 6)],
-    #     [(3, 3), (2, 5), (1, 6), (0, 1)],
-    #     [(2, 4), (3, 7), (1, 1), (0, 2)],
-    # ]
-
-    jobs_data = JobList(jobs_data)
-
-    (schedule) = giffler_thompson(jobs_data)
+def critical_path(schedule):
 
     get_saz_sez(schedule)
 
@@ -69,4 +51,20 @@ def get_saz_sez(schedule: list[ScheduledTask]):
 
 
 if __name__ == "__main__":
-    main()
+
+    #### Daten zum Testen aus Ablaufplanung (F. Jaehn, E. Pesch)
+    jobs_data = [
+        [(2, 3), (1, 5), (3, 8), (0, 2)],
+        [(0, 6), (1, 4), (2, 2), (3, 5)],
+        [(1, 3), (0, 1), (2, 6), (3, 2)],
+        [(2, 3), (1, 7), (0, 5), (3, 1)],
+        [(3, 3), (2, 4), (1, 1), (0, 6)],
+    ]
+
+    jobs_data = JobList(jobs_data)
+
+    schedule, makespan = giffler_thompson(jobs_data)
+
+    schedule = Schedule(schedule)
+
+    critical_path(schedule)

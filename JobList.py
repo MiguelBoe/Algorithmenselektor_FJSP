@@ -12,6 +12,8 @@
 import random
 from typing import Tuple
 
+# from giffler_thompson import giffler_thompson
+
 
 class JobList:
     def __init__(self, list_of_jobs: list[list[Tuple[int, int]]]):
@@ -21,6 +23,7 @@ class JobList:
         self.num_machines = self.get_num_machines()
         self.job_durations = self.get_processing_time()
         self.job_length = self.get_job_length()
+        # self.start_schedule= giffler_thompson(self)
 
     def __str__(self) -> str:
         return str(self.list_of_jobs)
@@ -80,7 +83,7 @@ class JobList:
         for _ in range(num_jobs):
 
             # Zufällige Anzahl der Tasks in dem Job (min 1 Task, max so viele wie Maschinen)
-            num_tasks = random.randint(1, num_machines)
+            num_tasks = num_machines
 
             # Liste der verfügbaren Maschinen
             machine_list = list(range(num_machines))
