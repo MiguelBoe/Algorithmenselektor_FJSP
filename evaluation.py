@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -8,7 +9,8 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 
 # Konfigurationsbereich.
 #----------------------------------------------------------------------------------------------------------------------#
-results_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\results'
+directory = os.getcwd()
+results_path = f'{directory}\\results'
 source = 'test'
 #----------------------------------------------------------------------------------------------------------------------#
 
@@ -45,7 +47,7 @@ print('\nEvaluation Done!')
 
 # Visualisierung des Vergleichs der Metaheuristik und des CP-Solvers anhand der Test-Instanz.
 def visualize_it(source, results_path):
-    with open(f'\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\data\\{source}_data.pkl', 'rb') as in_file:
+    with open(f'{directory}\\data\\{source}_data.pkl', 'rb') as in_file:
         data = pickle.load(in_file)
     df = pd.DataFrame()
     for i in range(len(data)):
@@ -71,21 +73,6 @@ def visualize_it(source, results_path):
 
     df_bar_melt = df_bar.melt(id_vars=['num_jobs'], value_vars= ['Metaheuristik', 'CP-Solver'])
 
-    # fig, ax = plt.subplots(figsize=(12, 10))
-    # plt.title('Vergleich der Performance der Metaheuristik und des CP-Solvers', fontsize=18, pad=20)
-    # sns.barplot(data=df_bar_melt, x="num_jobs", y="value", hue="variable", ax=ax)
-    # sns.lineplot(data=df_bar['Metaheuristik'], marker='o', sort=False, ax=ax)
-    # sns.lineplot(data=df_bar['CP-Solver'], marker='o', sort=False, ax=ax)
-    # ax.vlines(x=[3, 6], ymin=0, ymax=5600, colors='grey', ls='--', lw=2, alpha=0.7)
-    # plt.text(3.2, 5000, 'n = 25', rotation=90, color='grey', fontsize=12, alpha=0.8, weight="bold")
-    # plt.text(6.2, 5000, 'n = 40', rotation=90, color='grey', fontsize=12, alpha=0.8, weight="bold")
-    # plt.ylabel('makespan', fontsize=15)
-    # plt.xlabel('Anzahl Jobs n', fontsize=15)
-    # ax.tick_params(axis='x', labelsize=10)
-    # ax.tick_params(axis='y', labelsize=10)
-    # plt.legend(loc='upper left', fontsize=10)
-    # plt.show()
-
     fig, ax = plt.subplots(figsize=(12, 10))
     plt.title('Vergleich der Performance der Metaheuristik und des CP-Solvers', fontsize=18)
     sns.lineplot(data=df_bar['Metaheuristik'], marker='o', sort=False, label='Metaheuristik')
@@ -102,6 +89,6 @@ def visualize_it(source, results_path):
     plt.grid(True, alpha=0.3)
     plt.show()
 
-    fig.savefig('\\Users\\migue\\Desktop\\comparison.svg', format='svg', dpi=1200)
+    fig.savefig(f'{directory}\\results\\comparison.svg', format='svg', dpi=1200)
 
 visualize_it(source, results_path)

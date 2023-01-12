@@ -1,3 +1,4 @@
+import os
 import pathlib
 import pickle
 import random
@@ -7,8 +8,9 @@ from jobList import JobList
 
 #Auswahl der Instanzen und Definition des Dateipfades.
 #----------------------------------------------------------------------------------------------------------------------#
-source = 'test' # random, train, test, taillard
-data_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\data'
+directory = os.getcwd()
+data_path = f'{directory}\\data'
+source = 'random' # random, train, test, taillard
 #----------------------------------------------------------------------------------------------------------------------#
 
 

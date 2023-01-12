@@ -10,6 +10,7 @@
 #-----------------------------------------------------------------------------#
 """
 
+import os
 import pandas as pd
 from utils import *
 from cp_solver import *
@@ -31,9 +32,10 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 # Konfigurationsbereich
 #----------------------------------------------------------------------------------------------------------------------#
 # Definition der Dateipfade.
-data_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\data'
-results_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\results'
-models_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\models'
+directory = os.getcwd()
+data_path = f'{directory}\\data'
+results_path = f'{directory}\\results'
+models_path = f'{directory}\\models'
 
 # Auswahl der Instanz des generierten Datensatzes.
 source = 'test' # random, train, test, taillard

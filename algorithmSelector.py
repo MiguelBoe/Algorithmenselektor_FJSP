@@ -1,3 +1,4 @@
+import os
 import pickle
 import pathlib
 import pandas as pd
@@ -15,9 +16,10 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 
 # Konfigurationsbereich.
 #----------------------------------------------------------------------------------------------------------------------#
-data_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\data'
-results_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\results'
-models_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\models'
+directory = os.getcwd()
+data_path = f'{directory}\\data'
+results_path = f'{directory}\\results'
+models_path = f'{directory}\\models'
 train_source = 'train'
 test_source = 'test'
 validate_test_set = False
