@@ -33,11 +33,11 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 # Konfigurationsbereich
 #----------------------------------------------------------------------------------------------------------------------#
 # Auswahl der Instanz des generierten Datensatzes.
-source = 'test' # random, train, test, taillard
+source = 'taillard' # random, train, test, taillard
 instance = None
 
 # Auswahl des Solvers und Definition des Zeitlimits der Planung.
-solver = 'algorithm_selector'  # google, meta, algorithm_selector
+solver = 'meta'  # google, meta, algorithm_selector
 time_limit_in_seconds = 5
 
 # Konfiguration der Metaheuristik.
