@@ -1,3 +1,4 @@
+import os
 import pathlib
 import pickle
 import random
@@ -7,8 +8,9 @@ from jobList import JobList
 
 #Auswahl der Instanzen und Definition des Dateipfades.
 #----------------------------------------------------------------------------------------------------------------------#
-source = 'test' # random, train, test, taillard
-data_path = '\\Users\\migue\\PycharmProjects\\Algorithmenselektor_JSP\\data'
+directory = os.getcwd()
+data_path = f'{directory}\\data'
+source = 'random' # random, train, test, taillard
 #----------------------------------------------------------------------------------------------------------------------#
 
 
@@ -33,7 +35,7 @@ instances_count_per_combination = 3
 # Create directory if it doesn't exist
 pathlib.Path(data_path).mkdir(parents=True, exist_ok=True)
 
-# Mit Hilfe des Job Generators werden verschiedene Instanzen auf Basis der angegebenen Parameter generiert.
+# Mit Hilfe des job_generator_random werden verschiedene Instanzen auf Basis der angegebenen Parameter zufällig generiert.
 def job_generator_random(max_job_count, max_machine_count, max_duration, instances_count):
     data = []
     for i in range(instances_count):
@@ -47,6 +49,7 @@ def job_generator_random(max_job_count, max_machine_count, max_duration, instanc
         pickle.dump(data, out_file)
 
 
+# Mit Hilfe des job_generator_train_or_test werden verschiedene Instanzen auf Basis der angegebenen Parameter generiert.
 def job_generator_train_or_test(num_jobs, num_machines, max_duration_train, instances_count_per_combination):
     data = []
     for machines in num_machines:
@@ -59,6 +62,7 @@ def job_generator_train_or_test(num_jobs, num_machines, max_duration_train, inst
         pickle.dump(data, out_file)
 
 
+# Mit dieser Funktion werden externe Instanzen in das erforderliche Format transformiert. Dies wurde hauptsächlich für die Taillard-Instanzen benutzt.
 def get_extern_instances(data_path, source):
     data = []
     taillard_files = glob.glob(f'{data_path}\\{source}_instances\\*')
