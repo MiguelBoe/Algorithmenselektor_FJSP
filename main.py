@@ -48,6 +48,7 @@ priority_rule = 'LRPT' # LPT, SPT, LRPT, SRPT
 visualization_mode = False
 safe_schedule = False
 #----------------------------------------------------------------------------------------------------------------------#
+
 # Definition der Dateipfade.
 directory = os.getcwd()
 data_path = f'{directory}\\data'
