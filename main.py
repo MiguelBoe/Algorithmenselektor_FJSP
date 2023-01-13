@@ -32,12 +32,6 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 
 # Konfigurationsbereich
 #----------------------------------------------------------------------------------------------------------------------#
-# Definition der Dateipfade.
-directory = os.getcwd()
-data_path = f'{directory}\\data'
-results_path = f'{directory}\\results'
-models_path = f'{directory}\\models'
-
 # Auswahl der Instanz des generierten Datensatzes.
 source = 'test' # random, train, test, taillard
 instance = None
@@ -54,6 +48,11 @@ priority_rule = 'LRPT' # LPT, SPT, LRPT, SRPT
 visualization_mode = False
 safe_schedule = False
 #----------------------------------------------------------------------------------------------------------------------#
+# Definition der Dateipfade.
+directory = os.getcwd()
+data_path = f'{directory}\\data'
+results_path = f'{directory}\\results'
+models_path = f'{directory}\\models'
 
 # Erstellung des Ordners, in welchem die Ergebnisse abgespeichert sind.
 pathlib.Path(f'{results_path}\\reports').mkdir(parents=True, exist_ok=True)

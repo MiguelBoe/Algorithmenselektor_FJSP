@@ -9,11 +9,12 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 
 # Konfigurationsbereich.
 #----------------------------------------------------------------------------------------------------------------------#
-directory = os.getcwd()
-results_path = f'{directory}\\results'
 source = 'test'
 #----------------------------------------------------------------------------------------------------------------------#
 
+# Paths.
+directory = os.getcwd()
+results_path = f'{directory}\\results'
 
 # Read reports.
 results_algorithm_selector = pd.read_csv(f'{results_path}\\reports\\{source}_report_algorithm_selector.csv', sep=',', index_col=0)

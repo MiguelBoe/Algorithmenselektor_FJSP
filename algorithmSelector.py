@@ -16,15 +16,15 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 
 # Konfigurationsbereich.
 #----------------------------------------------------------------------------------------------------------------------#
-directory = os.getcwd()
-data_path = f'{directory}\\data'
-results_path = f'{directory}\\results'
-models_path = f'{directory}\\models'
 train_source = 'train'
 test_source = 'test'
 validate_test_set = False
 #----------------------------------------------------------------------------------------------------------------------#
 
+directory = os.getcwd()
+data_path = f'{directory}\\data'
+results_path = f'{directory}\\results'
+models_path = f'{directory}\\models'
 pathlib.Path(models_path).mkdir(parents=True, exist_ok=True)
 
 # Initialisierung der Klasse AlgorithmSelector. Diese Klasse hat zwei Modi: 'train' und 'selector.
