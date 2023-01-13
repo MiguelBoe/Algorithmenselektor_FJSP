@@ -11,6 +11,7 @@
 """
 
 import os
+import shutil
 import pandas as pd
 from utils import *
 from cp_solver import *
@@ -56,7 +57,9 @@ safe_schedule = False
 
 # Erstellung des Ordners, in welchem die Ergebnisse abgespeichert sind.
 pathlib.Path(f'{results_path}\\reports').mkdir(parents=True, exist_ok=True)
-pathlib.Path(f'{results_path}\\schedules').mkdir(parents=True, exist_ok=True)
+if os.path.exists(f'{results_path}\\schedules'):
+    shutil.rmtree(f'{results_path}\\schedules')
+pathlib.Path(f'{results_path}\\schedules\\gantt_charts').mkdir(parents=True, exist_ok=True)
 pathlib.Path(models_path).mkdir(parents=True, exist_ok=True)
 
 # Einlesen der Daten.
@@ -104,10 +107,14 @@ for instance in range(len(data)):
             print(f'Best solution with TabuSearch found with a makespan of {makespan}')
 
     # Visualisierng der Planung mit Hilfe von Plotly in einem Gantt-Diagramm.
+    fig = ff.create_gantt(schedule_list, index_col="Resource", show_colorbar=True, group_tasks=True, colors=sns.color_palette(cc.glasbey, n_colors=(len(data[instance].list_of_jobs))))
+    fig.layout.xaxis.type = "linear"
     if visualization_mode:
-        fig = ff.create_gantt(schedule_list, index_col="Resource", show_colorbar=True, group_tasks=True, colors=sns.color_palette(cc.glasbey, n_colors=(len(data[instance].list_of_jobs))))
-        fig.layout.xaxis.type = "linear"
         fig.show()
+
+    # Abspeichern der Gantt-Charts.
+    if safe_schedule:
+        fig.write_html(f'{results_path}\\schedules\\gantt_charts\\{source}_schedule{instance}_{solver}_gantt.html')
     
     # Abspeicherung der Ablaufpläne.
     if solver == 'algorithm_selector': results = results.append({'Instanz':instance, 'Makespan': makespan, 'Solver': selection}, ignore_index=True)
@@ -118,5 +125,5 @@ for instance in range(len(data)):
 # Wenn safe_schedule = 1 ist, werden die generierten Ablaufpläne abgespeichert.
 results.to_csv(f'{results_path}\\reports\\{source}_report_{solver}.csv', sep=',')
 if safe_schedule:
-    with open(f'{results_path}\\schedules\\{source}_schedule_{solver}.pkl', 'wb') as out_file:
+    with open(f'{results_path}\\schedules\\{source}_schedules_{solver}.pkl', 'wb') as out_file:
         pickle.dump(schedule, out_file)
