@@ -144,7 +144,7 @@ class AlgorithmSelector:
         self.attributes = ['num_machines', 'num_jobs', 'avg_job_duration', 'min_job_duration', 'max_job_duration',
                            'task_with_duration_[0:10]', 'task_with_duration_[11:20]', 'task_with_duration_[21:30]', 'task_with_duration_[31:40]',
                            'task_with_duration_[41:50]', 'task_with_duration_[51:60]', 'task_with_duration_[61:70]', 'task_with_duration_[71:80]',
-                           'task_with_duration_[81:90]', 'task_with_duration_[91:100]', 'task_with_duration_[>100]']
+                           'task_with_duration_[81:90]', 'task_with_duration_[91:100]', 'task_with_duration_[>100]', 'percent_conflicts']
 
         self.X_train = self.train_set[self.attributes]
         self.y_train = self.train_set['meta_better']
