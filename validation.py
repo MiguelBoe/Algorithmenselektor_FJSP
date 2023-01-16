@@ -9,7 +9,7 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 
 # Konfigurationsbereich.
 #----------------------------------------------------------------------------------------------------------------------#
-source = 'train'
+source = 'taillard'
 #----------------------------------------------------------------------------------------------------------------------#
 
 # Paths.
@@ -97,8 +97,8 @@ def visualize_lineplot(df_plot, directory):
 
     fig.savefig(f'{directory}\\results\\comparison.svg', format='svg', dpi=1200)
 
-def visualize_diff(df, directory):
 
+def visualize_diff(df, directory):
     df['delta'] = df['meta'] - df['google']
     df_plot = df[['num_jobs', 'num_machines','delta']]
     df_plot["num_machines"] = df["num_machines"].apply(lambda x: f"{x} Maschinen")
@@ -118,7 +118,30 @@ def visualize_diff(df, directory):
     fig.savefig(f'{directory}\\results\\comparison_diff.svg', format='svg', dpi=1200)
 
 
+def visualize_boxplot(df, directory):
+    df_plot = df[['num_jobs', 'num_machines', 'meta', 'google']]
+    df_plot = df_plot.loc[df_plot['num_jobs'] != 100]
+    df_plot = df_plot.rename(columns={'meta':'Metaheuristik','google':'CP-Solver'})
+    df_plot["num_machines"] = df["num_machines"].apply(lambda x: f"{x} Maschinen")
+    df_plot["num_jobs"] = df["num_jobs"].apply(lambda x: f"{x} Jobs")
+    df_plot_melt = df_plot.melt(id_vars=['num_jobs', 'num_machines'], value_vars=['Metaheuristik', 'CP-Solver'])
+
+    fig, ax = plt.subplots(figsize=(12, 5))
+    plt.title("Vegleich der Ergebnisse der Instanzen mit n ≤ 50", fontsize=18, pad=10)
+    sns.boxplot(data=df_plot_melt, x="value", y="variable", hue= 'num_jobs')
+    plt.xlabel("makespan", fontsize=15)
+    plt.ylabel("Lösungsverfahren", fontsize=15)
+    ax.tick_params(axis="x", labelsize=10)
+    ax.tick_params(axis="y", labelsize=10)
+    plt.legend(loc='upper right', fontsize=15)
+    plt.grid(True, alpha=0.3)
+    plt.show()
+
+    fig.savefig(f'{directory}\\results\\boxplot.svg', format='svg', dpi=1200)
+
+
 #algorithm_selector_validation(source, directory, results_path)
 df_plot, df = transform_data(source, results_path)
 visualize_lineplot(df_plot, directory)
 visualize_diff(df, directory)
+visualize_boxplot(df, directory)
