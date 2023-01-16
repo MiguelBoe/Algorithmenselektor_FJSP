@@ -9,7 +9,7 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 
 # Konfigurationsbereich.
 #----------------------------------------------------------------------------------------------------------------------#
-source = 'test'
+source = 'train'
 #----------------------------------------------------------------------------------------------------------------------#
 
 # Paths.
@@ -80,14 +80,14 @@ def visualize_lineplot(df_plot, directory):
     df_plot_melt = df_plot.melt(id_vars=['num_jobs'], value_vars= ['Metaheuristik', 'CP-Solver'])
 
     fig, ax = plt.subplots(figsize=(12, 10))
-    plt.title('Vergleich der Performance der Metaheuristik und des CP-Solvers', fontsize=18)
+    plt.title('Vergleich der Performance der Metaheuristik und des CP-Solvers', fontsize=18, pad=10)
     sns.lineplot(data=df_plot['Metaheuristik'], marker='o', sort=False, label='Metaheuristik')
     sns.lineplot(data=df_plot['CP-Solver'], marker='o', sort=False, label='CP-Solver')
     plt.vlines(x=[3, 6], ymin=1000, ymax=5200, colors='grey', ls='--', lw=2, alpha=0.7)
     plt.text(3.2, 4700, 'n = 25', rotation=90, color='grey', fontsize=12, alpha=0.8, weight="bold")
     plt.text(6.2, 4700, 'n = 40', rotation=90, color='grey', fontsize=12, alpha=0.8, weight="bold")
     plt.ylabel('makespan', fontsize=15)
-    plt.xlabel('Anzahl Jobs n', fontsize=15)
+    plt.xlabel('Job-Anzahl', fontsize=15)
     ax.tick_params(axis='x', labelsize=10)
     ax.tick_params(axis='y', labelsize=10)
     plt.xticks(range(len(df_plot)), df_plot['num_jobs'])
@@ -97,7 +97,28 @@ def visualize_lineplot(df_plot, directory):
 
     fig.savefig(f'{directory}\\results\\comparison.svg', format='svg', dpi=1200)
 
+def visualize_diff(df, directory):
+
+    df['delta'] = df['meta'] - df['google']
+    df_plot = df[['num_jobs', 'num_machines','delta']]
+    df_plot["num_machines"] = df["num_machines"].apply(lambda x: f"{x} Maschinen")
+    df_plot = df_plot.groupby(['num_jobs', 'num_machines'])['delta'].mean().reset_index()
+
+    fig, ax = plt.subplots(figsize=(12, 10))
+    plt.title("Differenz der Zielwerte zwischen Metaheuristik und CP-Solver", fontsize=18, pad=10)
+    sns.barplot(data=df_plot, x="num_jobs", y="delta", hue="num_machines")
+    plt.xlabel("Job-Anzahl", fontsize=15)
+    plt.ylabel("makespan Metaheuristik - makespan CP-Solver", fontsize=15)
+    ax.tick_params(axis="x", labelsize=10)
+    ax.tick_params(axis="y", labelsize=10)
+    plt.legend(loc='upper right', fontsize=15)
+    plt.grid(True, alpha=0.3)
+    plt.show()
+
+    fig.savefig(f'{directory}\\results\\comparison_diff.svg', format='svg', dpi=1200)
+
 
 #algorithm_selector_validation(source, directory, results_path)
 df_plot, df = transform_data(source, results_path)
 visualize_lineplot(df_plot, directory)
+visualize_diff(df, directory)
