@@ -94,7 +94,7 @@ def ortools_scheduler(data, time_limit_in_seconds):
             output += sol_line
 
         # Finally print the solution found.
-        print(f'\nBest solution with Google CP_Solver found with a makespan of {solver.ObjectiveValue()}')
+        print(f'\nBest solution with Google CP-Solver found with a makespan of {solver.ObjectiveValue()}')
         # print(output)
     else:
         print('No solution found.')

@@ -93,11 +93,11 @@ for instance in range(len(data)):
     elif solver == 'algorithm_selector':
         # Der Algorithmenselektor prognostiziert mit welchem Verfahren die betrachtete Instanz besser gelöst werden kann.
         selection = AlgorithmSelector(mode = 'selector', data_path = data_path, results_path = results_path, instance=data[instance], model = model, train_source = None, test_source = source, validate_test_set=None).get_selection()
-        # Bei selection = 0 ist der CP-Solver besser. In diesem Fall wird die Instanz wie in den Zeilen 72 bis 76 gelöst.
+        # Bei selection = 0 ist der CP-Solver besser. In diesem Fall wird die Instanz wie in den Zeilen 77 bis 81 gelöst.
         if selection == 0:
             assigned_jobs, all_machines, makespan = ortools_scheduler(data=data[instance].list_of_jobs, time_limit_in_seconds=time_limit_in_seconds)
             schedule_list = visualize_schedule(assigned_jobs=assigned_jobs, all_machines=all_machines, plan_date=0)
-        # Bei selection = 1 ist die Metaheuristik besser. In diesem Fall wird die Instanz wie in den Zeilen 77 bis 87 gelöst.
+        # Bei selection = 1 ist die Metaheuristik besser. In diesem Fall wird die Instanz wie in den Zeilen 82 bis 92 gelöst.
         elif selection == 1:
             timeout = time.time() + time_limit_in_seconds
             init_solution = giffler_thompson(data[instance], priority_rule)
