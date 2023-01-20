@@ -45,7 +45,7 @@ max_iter = 5 # Maximierung der Iterationen der TabuSearch
 priority_rule = 'LRPT' # LPT, SPT, LRPT, SRPT
 
 # Fertigen Ablaufplan im Gantt-Chart visualisieren? Sollte nur bei einzelnen Instanzen gemacht werden.
-visualization_mode = True
+visualization_mode = False
 safe_schedule = False
 #----------------------------------------------------------------------------------------------------------------------#
 
