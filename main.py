@@ -45,7 +45,7 @@ max_iter = 5 # Maximierung der Iterationen der TabuSearch
 priority_rule = 'LRPT' # LPT, SPT, LRPT, SRPT
 
 # Fertigen Ablaufplan im Gantt-Chart visualisieren? Sollte nur bei einzelnen Instanzen gemacht werden.
-visualization_mode = False
+visualization_mode = True
 safe_schedule = False
 #----------------------------------------------------------------------------------------------------------------------#
 
@@ -79,6 +79,7 @@ for instance in range(len(data)):
         assigned_jobs, all_machines, makespan = ortools_scheduler(data=data[instance].list_of_jobs, time_limit_in_seconds=time_limit_in_seconds)
         # Transformation der Daten in das richtige Format für die Visualisierung der Planung mit Hilfe von Plotly in einem Gantt-Diagramm.
         schedule_list = visualize_schedule(assigned_jobs=assigned_jobs, all_machines=all_machines, plan_date=0)
+        solution_method = get_solution_method(selection=0)
     elif solver == "meta":
         # Starten des Timers.
         timeout = time.time() + time_limit_in_seconds
@@ -89,6 +90,7 @@ for instance in range(len(data)):
         # Transformation der Daten in das richtige Format für die Visualisierung der Planung mit Hilfe von Plotly in einem Gantt-Diagramm.
         schedule_list = get_schedule_list(best_solution.schedule)
         makespan = best_solution.makespan
+        solution_method = get_solution_method(selection=1)
         print(f'Best solution with TabuSearch found with a makespan of {makespan}')
     elif solver == 'algorithm_selector':
         # Der Algorithmenselektor prognostiziert mit welchem Verfahren die betrachtete Instanz besser gelöst werden kann.
@@ -105,9 +107,10 @@ for instance in range(len(data)):
             schedule_list = get_schedule_list(best_solution.schedule)
             makespan = best_solution.makespan
             print(f'Best solution with TabuSearch found with a makespan of {makespan}')
+        solution_method = get_solution_method(selection=selection)
 
     # Visualisierng der Planung mit Hilfe von Plotly in einem Gantt-Diagramm.
-    fig = ff.create_gantt(schedule_list, index_col="Resource", show_colorbar=True, group_tasks=True, colors=sns.color_palette(cc.glasbey, n_colors=(len(data[instance].list_of_jobs))))
+    fig = ff.create_gantt(schedule_list, title=f'Ablaufplan für Instanz {instance+1}/{len(data)}: Lösungsverfahren: {solution_method}, Jobanzahl: {len(data[instance].list_of_jobs)}, Maschinenanzahl: {data[instance].num_machines}, makespan: {makespan}', index_col="Resource", show_colorbar=True, group_tasks=True, colors=sns.color_palette(cc.glasbey, n_colors=(len(data[instance].list_of_jobs))))
     fig.layout.xaxis.type = "linear"
     if visualization_mode:
         fig.show()
