@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from typing import Tuple, List
 from jobList import JobList
 import numpy as np
+from operator import attrgetter
 
 @dataclass
 class Task:
@@ -178,29 +179,17 @@ def get_machine_tasks(task_list: list[Task], machine_id: int, access_time_job: l
 
 def get_prio_task_LPT(task_on_machine: list[Task], jobs_data: JobList) -> Task:
     """ Wenn mehr als ein Task zuweisbar ist soll anhand der LPT regel der Task bestimmt werden, welcher zuerst eingeplant wird."""
-    # Berechnen der Jobdauer aller jobs
-    jobs_duration = jobs_data.get_processing_time()  # list[int]
-    # Gleich 0 für LPT
-    job_duration = 0
-    # Kontrolle für jeden zur auswahl stehenden Task ob die Dauer des zugehörigen Jobs länger ist als die des Vorgängers
-    for task in task_on_machine:
-        if jobs_duration[task.job_id] > job_duration:
-            job_duration = jobs_duration[task.job_id]
-            selected_task = task
+    # Wahl der Operation mit der kürzesten Bearbeitungszeit
+    selected_task = max(task_on_machine, key=attrgetter('duration'))
     return selected_task
 
 
 def get_prio_task_SPT(task_on_machine: list[Task], jobs_data: JobList) -> Task:
     """ Wenn mehr als ein Task zuweisbar ist soll anhand der LPT regel der Task bestimmt werden, welcher zuerst eingeplant wird."""
-    jobs_duration = jobs_data.get_processing_time()  # [durations]
-    # Große Zahl für SPT
-    job_duration = 1e6
-    # Kontrolle für jeden zur auswahl stehenden Task ob die Dauer des zugehörigen Jobs kürzer ist als die des Vorgängers
-    for task in task_on_machine:
-        if jobs_duration[task.job_id] < job_duration:
-            job_duration = jobs_duration[task.job_id]
-            selected_task = task
+    # Wahl der Operation mit der kürzesten Bearbeitungszeit
+    selected_task = min(task_on_machine, key=attrgetter('duration'))
     return selected_task
+
 
 def get_prio_task_RPT(task_on_machine: list[Task], jobs_data: JobList, priority_rule) -> Task:
     job_ids = [o.job_id for o in task_on_machine]
