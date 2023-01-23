@@ -110,7 +110,7 @@ for instance in range(len(data)):
         solution_method = get_solution_method(selection=selection)
 
     # Visualisierng der Planung mit Hilfe von Plotly in einem Gantt-Diagramm.
-    fig = ff.create_gantt(schedule_list, title=f'Ablaufplan für Instanz {instance+1}/{len(data)}: Lösungsverfahren: {solution_method}, Jobanzahl: {len(data[instance].list_of_jobs)}, Maschinenanzahl: {data[instance].num_machines}, makespan: {makespan}', index_col="Resource", show_colorbar=True, group_tasks=True, colors=sns.color_palette(cc.glasbey, n_colors=(len(data[instance].list_of_jobs))))
+    fig = ff.create_gantt(schedule_list, title=f'Ablaufplan für Instanz {instance+1}/{len(data)}: Lösungsverfahren: {solution_method}, Laufzeit: {time_limit_in_seconds} Sekunden, Jobanzahl: {len(data[instance].list_of_jobs)}, Maschinenanzahl: {data[instance].num_machines}, makespan: {makespan}', index_col="Resource", show_colorbar=True, group_tasks=True, colors=sns.color_palette(cc.glasbey, n_colors=(len(data[instance].list_of_jobs))))
     fig.layout.xaxis.type = "linear"
     if visualization_mode:
         fig.show()
