@@ -62,3 +62,12 @@ def current_solution_create_copy(init_solution):
         current_solution.update({i: scheduled_task})
 
     return current_solution
+
+# Welches Lösungsverfahren wurde gewählt?
+def get_solution_method(selection):
+    if selection == 0:
+        solution_method = 'Google OR-Tools CP-Solver'
+    elif selection == 1:
+        solution_method = 'Metaheuristik'
+
+    return solution_method

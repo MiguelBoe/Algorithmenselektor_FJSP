@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from typing import Tuple, List
 from jobList import JobList
 import numpy as np
+from operator import attrgetter
 
 @dataclass
 class Task:
@@ -201,6 +202,7 @@ def get_prio_task_SPT(task_on_machine: list[Task], jobs_data: JobList) -> Task:
             job_duration = jobs_duration[task.job_id]
             selected_task = task
     return selected_task
+
 
 def get_prio_task_RPT(task_on_machine: list[Task], jobs_data: JobList, priority_rule) -> Task:
     job_ids = [o.job_id for o in task_on_machine]
