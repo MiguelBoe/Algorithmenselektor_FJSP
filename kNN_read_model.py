@@ -5,7 +5,7 @@
 #         Projektseminar Business Analytics - Wintersemester 22/23            #
 #-----------------------------------------------------------------------------#
 #                                                                             #
-#             Evaluation und Vorhesage des Abgespeicherten KNNs               #
+#             Evaluation und Vorhesage des abgespeicherten KNNs               #
 #                                                                             # 
 #                                                                             #
 #-----------------------------------------------------------------------------#
