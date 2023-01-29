@@ -59,7 +59,7 @@ def predict(read_model_data, attribute):
 
     predictions = model.predict(input_test)
     predictions = pd.DataFrame(predictions, columns=["0", "1"])
-    predictions.to_csv("//results//reports//predictions_KNN.csv", index=False)
+    predictions.to_csv(".//results//reports//predictions_KNN.csv", index=False)
 
     print("----------------------------------------------------------------------------------")
     print("Für die eingelesenen Inputdaten wurde eine Vorhersage generiert und abgespeichert")
