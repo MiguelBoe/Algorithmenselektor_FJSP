@@ -1,3 +1,15 @@
+"""
+@author: pretz & böttcher
+
+#-----------------------------------------------------------------------------#
+#         Projektseminar Business Analytics - Wintersemester 22/23            #
+#-----------------------------------------------------------------------------#
+#                                                                             #
+#                                 Tabu-Suche                                  #
+#                                                                             #
+#-----------------------------------------------------------------------------#
+"""
+
 from neighborHood import NeighborHood, NeighborhoodSolution
 import plotly.figure_factory as ff
 from utils import get_schedule_list

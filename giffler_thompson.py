@@ -1,8 +1,20 @@
+"""
+@author: böttcher & pretz
+
+#-----------------------------------------------------------------------------#
+#         Projektseminar Business Analytics - Wintersemester 22/23            #
+#-----------------------------------------------------------------------------#
+#                                                                             #
+#                       Giffler & Thompson Algorithmus                        #
+#                     Generierung eines JSP-Ablaufplans                       # 
+#                                                                             #
+#-----------------------------------------------------------------------------#
+"""
+
 from dataclasses import dataclass, field
 from typing import Tuple, List
 from jobList import JobList
-import numpy as np
-from operator import attrgetter
+
 
 @dataclass
 class Task:
@@ -21,7 +33,9 @@ class ScheduledTask(Task):
     pred: List = field(default_factory=lambda: [])
 
 
-def giffler_thompson(jobs_data: JobList, priority_rule) -> list[ScheduledTask]:
+def giffler_thompson(jobs_data: JobList, priority_rule: str) -> list[ScheduledTask]:
+    # sourcery skip: remove-redundant-if
+
     """
     Berechnung eines Schedules mittels des Giffler und Thompson Algorithmus
     """
@@ -45,13 +59,13 @@ def giffler_thompson(jobs_data: JobList, priority_rule) -> list[ScheduledTask]:
     num_tasks_per_machine = [0] * num_machines
 
     # Solange irgendein Eintrag der Liste job_length ungleich des Eintrags an der gleichen Stelle in accessable_tasks_idx ist, sind noch nicht alle Tasks eingeplant
-    idx_task_in_schedule = 0  # ????
+    idx_task_in_schedule = 0
     while any(job_len != acc_idx for job_len, acc_idx in zip(job_length, accessable_tasks_idx)):
 
         # Initialisieren der Liste der zuweisbaren Tasks
         accessable_tasks = get_accessable_tasks(accessable_tasks_idx, jobs_data)
 
-        # Auswahl des Tasks, der nach Giffler und Thompson als nächstes zugewiesen werden soll
+        # Auswahl des Tasks, der nach Giffler und Thompson als nächstes zugewiesen werden soll und Berechnung von C*=min_value
         selected_task, min_value = choose_task(accessable_tasks, access_time_machines, access_time_job)
 
         # Kontrollieren ob mehr Tasks auf der gewählten Machine zuweisbar sind, als den ausgewählten Task
@@ -75,6 +89,14 @@ def giffler_thompson(jobs_data: JobList, priority_rule) -> list[ScheduledTask]:
         # Berechnung des Start- und Endwertes des ausgewählten Tasks
         start = max(access_time_machines[selected_task.machine_id], access_time_job[selected_task.job_id])
         end = start + selected_task.duration
+        # Rausschreiben der Vorgänger des Tasks
+        pred = get_predecessor(
+            schedule=schedule,
+            task_id=selected_task.task_id,
+            task_on_machine_idx=num_tasks_per_machine[selected_task.machine_id],
+            machine_id=selected_task.machine_id,
+            job_id=selected_task.job_id,
+        )
 
         # Den ausgewählten Task in die dataclass ScheduledTask aufnehmen und um start und end erweitern
         scheduled_task = ScheduledTask(
@@ -85,20 +107,14 @@ def giffler_thompson(jobs_data: JobList, priority_rule) -> list[ScheduledTask]:
             start=start,
             end=end,
             task_on_machine_idx=num_tasks_per_machine[selected_task.machine_id],
-            pred=get_predecessor(
-                schedule=schedule,
-                task_id=selected_task.task_id,
-                task_on_machine_idx=num_tasks_per_machine[selected_task.machine_id],
-                machine_id=selected_task.machine_id,
-                job_id=selected_task.job_id,
-            ),
+            pred=pred,
         )
 
         # Den einzuplanenden Task dem Schedule hinzufügen
         schedule[idx_task_in_schedule] = scheduled_task
         idx_task_in_schedule += 1
 
-        # Aktualisierung
+        # Aktualisierung der Anzahl an Tasks auf der Maschine
         num_tasks_per_machine[selected_task.machine_id] += 1
 
         # Aktualisierung der aufgebrauchten Zeit an der Maschine und der Verfügbarkeit des Jobs
@@ -114,8 +130,7 @@ def giffler_thompson(jobs_data: JobList, priority_rule) -> list[ScheduledTask]:
     return schedule
 
 
-def update_access_times(
-    selected_task: Task, access_time_machines: list, access_time_job: list) -> Tuple[list, list]:
+def update_access_times(selected_task: Task, access_time_machines: list, access_time_job: list) -> Tuple[list, list]:
 
     """ Aktualisieren der Zugangszeit der ausgewählten Maschine und des Jobs dessen Task zugewiesen wurde."""
 
@@ -123,7 +138,6 @@ def update_access_times(
     job = selected_task.job_id
 
     # Neue Zeit entspricht der Taskdauer + max(Maschinenzugangszeit, Jobzugangszeit)
-
     new_accesstime = selected_task.duration + max(access_time_machines[machine], access_time_job[job])
 
     access_time_machines[machine] = new_accesstime
@@ -132,33 +146,31 @@ def update_access_times(
     return access_time_job, access_time_machines
 
 
-
 def choose_task(accessable_tasks: list[Task], access_time_machines: list, access_time_job: list) -> Task:
 
     """Auswahl der Maschine und des Tasks, der auf diese zugewiesen wird."""
 
-    criteria = []
+    earliest_end_list = []
 
     for task in accessable_tasks:
         machine = task.machine_id
         job_id = task.job_id
 
-        # Berechnung des Kriteriums nach Giffler und Thompson
-        c = task.duration + max(access_time_machines[machine], access_time_job[job_id])
-        criteria.append(c)
+        # Berechnung der frühesten Endzeit aller verfügbaren Tasks
+        earliest_end = task.duration + max(access_time_machines[machine], access_time_job[job_id])
+        earliest_end_list.append(earliest_end)
 
-    # Auswahl des minimalen Wertes
-    min_value = min(criteria)
+    # Auswahl des minimalen Wertes (im Algorithmus C*)
+    min_value = min(earliest_end_list)
     # Auswahl des Tasks, bei dem der Wert am geringsten ist
-    selected_task_idx = criteria.index(min_value)
+    selected_task_idx = earliest_end_list.index(min_value)
 
     return accessable_tasks[selected_task_idx], min_value
 
 
 def get_accessable_tasks(accessable_tasks_idx: list, jobs_data: JobList) -> list[Task]:
-    """ Rausschrieben der zuweisbaren Tasks mit Hilfe der Indizes. """
+    """ Ermitteln der zuweisbaren Tasks mit Hilfe der Indizes. """
     accessable_tasks = []
-
 
     for job_id, (job, idx) in enumerate(zip(jobs_data.list_of_jobs, accessable_tasks_idx)):
         if idx in range(len(job)):
@@ -177,13 +189,16 @@ def get_machine_tasks(task_list: list[Task], machine_id: int, access_time_job: l
             available_tasks_on_machine.append(task)
     return available_tasks_on_machine
 
+
 def get_prio_task_LPT(task_on_machine: list[Task], jobs_data: JobList) -> Task:
+
     """ Wenn mehr als ein Task zuweisbar ist soll anhand der LPT regel der Task bestimmt werden, welcher zuerst eingeplant wird."""
+
     # Berechnen der Jobdauer aller jobs
     jobs_duration = jobs_data.get_processing_time()  # list[int]
     # Gleich 0 für LPT
     job_duration = 0
-    # Kontrolle für jeden zur auswahl stehenden Task ob die Dauer des zugehörigen Jobs länger ist als die des Vorgängers
+    # Kontrolle für jeden zur Auswahl stehenden Task ob die Dauer des zugehörigen Jobs länger ist als die des Vorgängers
     for task in task_on_machine:
         if jobs_duration[task.job_id] > job_duration:
             job_duration = jobs_duration[task.job_id]
@@ -192,8 +207,10 @@ def get_prio_task_LPT(task_on_machine: list[Task], jobs_data: JobList) -> Task:
 
 
 def get_prio_task_SPT(task_on_machine: list[Task], jobs_data: JobList) -> Task:
-    """ Wenn mehr als ein Task zuweisbar ist soll anhand der LPT regel der Task bestimmt werden, welcher zuerst eingeplant wird."""
-    jobs_duration = jobs_data.get_processing_time()  # [durations]
+
+    """ Wenn mehr als ein Task zuweisbar ist soll anhand der LPT Regel der Task bestimmt werden, welcher zuerst eingeplant wird."""
+
+    jobs_duration = jobs_data.get_processing_time()
     # Große Zahl für SPT
     job_duration = 1e6
     # Kontrolle für jeden zur auswahl stehenden Task ob die Dauer des zugehörigen Jobs kürzer ist als die des Vorgängers
@@ -205,24 +222,59 @@ def get_prio_task_SPT(task_on_machine: list[Task], jobs_data: JobList) -> Task:
 
 
 def get_prio_task_RPT(task_on_machine: list[Task], jobs_data: JobList, priority_rule) -> Task:
-    job_ids = [o.job_id for o in task_on_machine]
-    task_ids = [o.task_id for o in task_on_machine]
+
+    """ Wenn mehr als ein Task zuweisbar ist soll anhand der RPT Regel der Task bestimmt werden, welcher zuerst eingeplant wird."""
+
+    # Für alle Tasks auf der Maschine die Job IDs und Task IDs rausschreiben
+    job_ids = [task.job_id for task in task_on_machine]
+    task_ids = [task.task_id for task in task_on_machine]
 
     remaining_processing_time = {}
-    index=0
-    for x, y in zip(job_ids, task_ids):
-        remaining_processing_time.update({index:sum(task[1] for task in jobs_data.list_of_jobs[x][y:]) for job in job_ids})
-        index += 1
+    for index, (x, y) in enumerate(zip(job_ids, task_ids)):
+        remaining_processing_time |= {index: sum(task[1] for task in jobs_data.list_of_jobs[x][y:]) for _ in job_ids}
 
-    if priority_rule == 'LRPT':
+    if priority_rule == "LRPT":
         selected_task = task_on_machine[max(remaining_processing_time, key=remaining_processing_time.get)]
-    elif priority_rule == 'SRPT':
+    elif priority_rule == "SRPT":
         selected_task = task_on_machine[min(remaining_processing_time, key=remaining_processing_time.get)]
 
     return selected_task
 
 
-# Mit Hilfe dieser Funktion werden während der Generierung der Startlösung die Vorgänger-Operationen abgespeichert.
-def get_predecessor(schedule,task_id, task_on_machine_idx, machine_id, job_id):
-    return [k for k, v in schedule.items() if (v.job_id == job_id and v.task_id ==task_id-1) or
-            (v.machine_id==machine_id and v.task_on_machine_idx==task_on_machine_idx-1)]
+def get_predecessor(
+    schedule: dict[str, ScheduledTask], task_id: int, task_on_machine_idx: int, machine_id: int, job_id: int
+):
+
+    """ Mit Hilfe dieser Funktion werden während der Generierung der Startlösung die Vorgänger-Operationen abgespeichert. 
+    Dies kann zur Berechnung des kritischen Pfades genutzt werden"""
+
+    return [
+        key
+        for key, task in schedule.items()
+        if (task.job_id == job_id and task.task_id == task_id - 1)
+        or (task.machine_id == machine_id and task.task_on_machine_idx == task_on_machine_idx - 1)
+    ]
+
+
+if __name__ == "__main__":
+    ### Daten zum Testen
+    # instance = [
+    #     [(0, 5), (1, 3), (2, 3), (3, 2)],
+    #     [(1, 4), (0, 7), (2, 8), (3, 6)],
+    #     [(3, 3), (2, 5), (1, 6), (0, 1)],
+    #     [(2, 4), (3, 7), (1, 1), (0, 2)],
+    # ]
+
+    instance = [
+        [(2, 3), (1, 5), (3, 8), (0, 2)],
+        [(0, 6), (1, 4), (2, 2), (3, 5)],
+        [(1, 3), (0, 1), (2, 6), (3, 2)],
+        [(2, 3), (1, 7), (0, 5), (3, 1)],
+        [(3, 3), (2, 4), (1, 1), (0, 6)],
+    ]
+
+    jobs_data = JobList(instance)
+
+    prio = "LRPT"  # LPT,SPT,LRPT,SRPT
+
+    schedule = giffler_thompson(jobs_data, prio)

@@ -1,3 +1,15 @@
+"""
+@author: pretz & böttcher
+
+#-----------------------------------------------------------------------------#
+#         Projektseminar Business Analytics - Wintersemester 22/23            #
+#-----------------------------------------------------------------------------#
+#                                                                             #
+#                              Hilfsfunktionen                                #
+#                                                                             #
+#-----------------------------------------------------------------------------#
+"""
+
 from giffler_thompson import ScheduledTask
 
 # Diese Funktion dient zur Transformation der Daten (von OR-Tools) für die Visualisierung.
