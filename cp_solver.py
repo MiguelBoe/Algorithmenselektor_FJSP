@@ -1,3 +1,15 @@
+"""
+@author: pretz & böttcher
+
+#-----------------------------------------------------------------------------#
+#         Projektseminar Business Analytics - Wintersemester 22/23            #
+#-----------------------------------------------------------------------------#
+#                                                                             #
+#                             OR-Tools CP-Solver                              #
+#                                                                             #
+#-----------------------------------------------------------------------------#
+"""
+
 import collections
 from ortools.sat.python import cp_model
 

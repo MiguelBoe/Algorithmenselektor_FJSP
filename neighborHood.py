@@ -1,3 +1,15 @@
+"""
+@author: pretz & böttcher
+
+#-----------------------------------------------------------------------------#
+#         Projektseminar Business Analytics - Wintersemester 22/23            #
+#-----------------------------------------------------------------------------#
+#                                                                             #
+#                             Nachbarschaftssuche                             #
+#                                                                             #
+#-----------------------------------------------------------------------------#
+"""
+
 from dataclasses import dataclass, field
 from giffler_thompson import get_predecessor
 from typing import Dict
