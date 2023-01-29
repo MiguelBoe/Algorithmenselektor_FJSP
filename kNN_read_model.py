@@ -21,7 +21,7 @@ import keras
 def read_model_data(data: pd.DataFrame, attribute: str):
     "Aufteilen der Daten in INput und Output und einlesen des Modells"
 
-    model = keras.models.load_model(f"model_{attribute}_attribute_knn")
+    model = keras.models.load_model(f".\\models\\KNN\\model_{attribute}_attribute_knn")
 
     # je nach Attribut Anzahl werden andere Daten benötigt
     if attribute == "all":
@@ -42,7 +42,7 @@ def read_model_data(data: pd.DataFrame, attribute: str):
 
 def evaluate(read_model_data, attribute):
     # Testdatensatz der Evaluiert werden soll
-    path = ".//data//test_von_train.csv"
+    path = ".//data//csv_data_for_knn//test_von_train.csv"
     data = read_csv(path, header=None)
     input_test, output_test, model = read_model_data(data, attribute)
 
@@ -53,16 +53,16 @@ def evaluate(read_model_data, attribute):
 
 
 def predict(read_model_data, attribute):
-    path = ".//data//test_set.csv"
+    path = ".//data//csv_data_for_knn//test_set.csv"
     data = read_csv(path, header=None)
     input_test, _, model = read_model_data(data, attribute)
 
     predictions = model.predict(input_test)
     predictions = pd.DataFrame(predictions, columns=["0", "1"])
-    predictions.to_csv("predictions_KNN.csv", index=False)
+    predictions.to_csv("//results//reports//predictions_KNN.csv", index=False)
 
     print("----------------------------------------------------------------------------------")
-    print("Für die eingelesenen Inputdaten wurde eine Vorhersage generiert und abgespechert")
+    print("Für die eingelesenen Inputdaten wurde eine Vorhersage generiert und abgespeichert")
     print("----------------------------------------------------------------------------------")
 
 

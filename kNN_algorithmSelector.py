@@ -17,7 +17,7 @@ def read_data():
         Outputdaten für das KNN.
     """
 
-    path = ".\\data\\train_set.csv"
+    path = ".\\data\\csv_data_for_knn\\train_set.csv"
     train_data = pd.read_csv(path, header=None)
 
     input_data = train_data.iloc[1:, :-1].to_numpy(dtype=float)  # num_jobs: [1:2], 1-5: [:5], 1-6: [:16], all: [:-1]
@@ -185,20 +185,6 @@ def plots(history, diff, results):
     ax1.set_ylim([0.25, 1.01])
     ax1.legend(loc="lower right", fontsize=15)
 
-    # # Accuracy und Loss
-    # fig1, ax1 = plt.subplots(1, 1, sharex=True, figsize=(12, 10))
-    # # ax1[0].grid(True, alpha=0.3)
-    # ax1.grid(True, alpha=0.3)
-    # plt.title("Entwicklung des Accuracy-Scores beim Training des KNN", fontsize=18, pad=10)
-    # plt.xlabel("Epochen", fontsize=15)
-    # # ax1[0].tick_params(axis="both", which="major", labelsize=15)
-    # # ax1[0].tick_params(axis="both", which="minor", labelsize=15)
-    # ax1.tick_params(axis="both", which="major", labelsize=15)
-    # ax1.tick_params(axis="both", which="minor", labelsize=15)
-    # # ax1[0].plot(history.history["loss"], linewidth=0.5)
-    # # ax1[0].set_ylabel("Loss", fontsize=15)
-    # ax1.plot(history.history["accuracy"], linewidth=0.5)
-    # ax1.set_ylabel("Accuracy", fontsize=15)
 
     # hist
     fig2, ax2 = plt.subplots(1, 1, sharex=True, figsize=(12, 10))
