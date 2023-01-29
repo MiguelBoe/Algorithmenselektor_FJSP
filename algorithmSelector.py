@@ -69,9 +69,16 @@ class AlgorithmSelector:
     # Mit dieser Funktion wird eine Prognose mit dem trainierten Modell für die übergebene Instanz generiert.
     def get_selection(self):
         # Zuerst wird wieder ein Datensatz generiert, welcher von dem Modell verarbeitet werden kann.
-        self.X = self.get_instance_features(self, data = self.instance, results = None)
-        # Anschließend wird mit dem Modell die Prognose durchgeführt, welches Lösungsverfahren besser geeignet ist.
-        self.result = int(self.model.predict(self.X)[0])
+        if self.model:
+            self.X = self.get_instance_features(self, data = self.instance, results = None)
+            # Anschließend wird mit dem Modell die Prognose durchgeführt, welches Lösungsverfahren besser geeignet ist.
+            self.result = int(self.model.predict(self.X)[0])
+        else:
+            # Wenn das naive Modell ausgewählt wurde, wird anhand einer Abfrage überprüft, wie groß die Jobanzahl der Instanz ist. Wenn diese echt größer als 25 ist wird die Metaheuristik gewählt.
+            if len(self.instance.list_of_jobs) <= 25:
+                self.result = 0
+            else:
+                self.result = 1
         return self.result
 
     # Diese Funktion wird dafür verwendet, um Attribute von den Instanzen abzuleiten und ein Trainings- bzw. Test-Set zu generieren, mit welchem ein ML-Modell trainiert, bzw. validiert werden kann.

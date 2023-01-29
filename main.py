@@ -38,6 +38,7 @@ instance = None
 
 # Auswahl des Solvers und Definition des Zeitlimits der Planung.
 solver = 'algorithm_selector'  # google, meta, algorithm_selector
+modell = 'naive' # naive, random forest
 time_limit_in_seconds = 5
 
 # Konfiguration der Metaheuristik.
@@ -66,9 +67,11 @@ pathlib.Path(models_path).mkdir(parents=True, exist_ok=True)
 with open(f'{data_path}\\{source}_data.pkl', 'rb') as in_file:
     data = pickle.load(in_file)
 
-if solver == 'algorithm_selector':
+if solver == 'algorithm_selector' and modell == 'random forest':
     with open(f'{models_path}\\random_forest.pkl', 'rb') as in_file:
         model = pickle.load(in_file)
+else:
+    model = False
 
 results = pd.DataFrame()
 schedule = {}
